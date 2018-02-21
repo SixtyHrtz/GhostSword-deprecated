@@ -1,0 +1,61 @@
+﻿using GhostSword;
+using GhostSword.Types;
+using GhostSwordPlugin.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+
+namespace GhostSwordPlugin
+{
+    public class GsContext : DbContext
+    {
+        public DbSet<Dialogue> Dialogues { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<ItemDiscovery> ItemDiscoveries { get; set; }
+        public DbSet<Journey> Journeys { get; set; }
+        public DbSet<NPC> NPCs { get; set; }
+        public DbSet<Place> Places { get; set; }
+        public DbSet<PlaceAdjacency> PlaceAdjacencies { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<PlayerItem> PlayerItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Dialogue>()
+                .Property(x => x.Text)
+                .HasDefaultValue(string.Empty);
+
+            modelBuilder.Entity<PlaceAdjacency>()
+                .HasOne(x => x.Place1)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(x => x.Place1Id);
+
+            modelBuilder.Entity<PlaceAdjacency>()
+                .HasOne(x => x.Place2)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(x => x.Place2Id);
+
+            modelBuilder.Entity<Player>()
+                .Property(x => x.IsBusy)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<Player>()
+                .Property(x => x.PlaceId)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<Player>()
+                .Property(x => x.MenuId)
+                .HasDefaultValue(1);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connectionString = DatabaseSettings.Load("database.json").GetConnectionString();
+            if (!connectionString.IsValid)
+                throw new Exception($"{Resources.FailedLoadDbSettings}!");
+
+            optionsBuilder.UseSqlServer(connectionString.Value);
+        }
+    }
+}
