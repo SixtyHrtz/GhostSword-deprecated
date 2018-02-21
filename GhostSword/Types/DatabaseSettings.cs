@@ -7,7 +7,7 @@ namespace GhostSword.Types
     {
         public string Server { get; set; }
         public string Database { get; set; }
-        public string UserID { get; set; }
+        public string UserId { get; set; }
         public string Password { get; set; }
         public bool? TrustedConnection { get; set; }
 
@@ -28,8 +28,8 @@ namespace GhostSword.Types
 
             result += $"Server={Server};Database={Database};";
 
-            if (!string.IsNullOrWhiteSpace(UserID))
-                result += $"User Id={UserID};";
+            if (!string.IsNullOrWhiteSpace(UserId))
+                result += $"User Id={UserId};";
             if (!string.IsNullOrWhiteSpace(Password))
                 result += $"Password={Password};";
 
