@@ -8,10 +8,8 @@ namespace GhostSwordOnline.Console
     public class CommandHandler : BaseCommandHandler
     {
         private IServerCore serverCore;
-        private bool isRunning = true;
 
-        public bool IsRunning { get { return isRunning; } }
-
+        public bool IsRunning { get; private set; } = true;
         public CommandHandler(IServerCore serverCore) => this.serverCore = serverCore;
 
         protected override void RegisterCommands()
@@ -44,7 +42,7 @@ namespace GhostSwordOnline.Console
 
         private Message Exit()
         {
-            isRunning = false;
+            IsRunning = false;
             return new Message(Resources.AppExit);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using GhostSword;
 using GhostSwordOnline.Console;
-using GhostSwordOnline.Core;
 
 namespace GhostSwordOnline
 {

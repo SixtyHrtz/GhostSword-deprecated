@@ -5,15 +5,15 @@ using GhostSwordOnline.Plugins;
 using System;
 using System.Timers;
 
-namespace GhostSwordOnline.Core
+namespace GhostSwordOnline
 {
     public class ServerCore : IServerCore, IDisposable
     {
         private Debug debug;
         private Timer timer;
+        private IGame game;
 
         private BotPluginManager botManager;
-        private GamePluginManager gameManager;
 
         public ServerCore() => debug = new Debug("Server");
 
@@ -28,12 +28,13 @@ namespace GhostSwordOnline.Core
 
             debug.Log(botMessage);
 
-            gameManager = new GamePluginManager();
+            var gameManager = new GamePluginManager();
             var gameMessage = gameManager.LoadObjects(this);
             if (!gameMessage.IsValid)
                 return gameMessage;
 
             debug.Log(gameMessage);
+            game = gameManager.Game;
 
             timer = new Timer(1000);
             timer.Elapsed += OnTimer;
@@ -46,39 +47,36 @@ namespace GhostSwordOnline.Core
         {
             debug.Log($"{message.Username}: {message.Text}");
 
-            using (var session = new Session(gameManager.Game))
+            var answer = game.GetAnswer(message);
+            var user = answer.Item1;
+            var answerMsg = answer.Item2;
+
+            if (!answerMsg.IsValid)
             {
-                var answer = session.GetAnswer(message);
-                if (!answer.IsValid)
+                if (user != null)
                 {
-                    if (session.User != null)
-                    {
-                        bot.SendText(session.User, answer.Error.Text);
-                        debug.Log($"{session.User.Username}: {answer.Error.Text}");
-                    }
-                    else
-                        debug.Log(answer.Error.Text);
-
-                    return;
+                    bot.SendText(user, answerMsg.Error.Text);
+                    debug.Log($"{user.Username}: {answerMsg.Error.Text}");
                 }
+                else
+                    debug.Log(answerMsg.Error.Text);
 
-                bot.SendText(answer.Value.User, answer.Value.Message.Text, answer.Value.Keyboard);
-                debug.Log($"{answer.Value.User.Username}: {answer.Value.Message}");
+                return;
             }
+
+            bot.SendText(answerMsg.Value.User, answerMsg.Value.Message.Text, answerMsg.Value.Keyboard);
+            debug.Log($"{answerMsg.Value.User.Username}: {answerMsg.Value.Message}");
         }
 
         public void OnError(string text) => debug.LogError(text);
 
         public void OnTimer(object sender, ElapsedEventArgs e)
         {
-            using (var session = new Session(gameManager.Game))
+            var answers = game.GetEventsResults();
+            foreach (var answer in answers)
             {
-                var answers = session.GetEventsResults();
-                foreach (var answer in answers)
-                {
-                    botManager.Bot.SendText(answer.User, answer.Message.Text, answer.Keyboard);
-                    debug.Log($"{answer.User.Username}: {answer.Message}");
-                }
+                botManager.Bot.SendText(answer.User, answer.Message.Text, answer.Keyboard);
+                debug.Log($"{answer.User.Username}: {answer.Message}");
             }
         }
 

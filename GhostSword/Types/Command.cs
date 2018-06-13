@@ -11,20 +11,15 @@ namespace GhostSword.Types
         private const char UNDERLINE = '_';
         private const char SPACE = ' ';
 
-        private string input;
-        private string name;
-        private CommandType type;
-        private Argument[] arguments;
-
-        public string Input { get { return input; } }
-        public string Name { get { return name; } }
-        public CommandType Type { get { return type; } }
-        public Argument[] Arguments { get { return arguments; } }
+        public string Input { get; private set; }
+        public string Name { get; private set; }
+        public CommandType Type { get; private set; }
+        public Argument[] Arguments { get; private set; }
 
         public Command(string value)
         {
-            input = value;
-            type = CommandType.None;
+            Input = value;
+            Type = CommandType.None;
 
             if (string.IsNullOrWhiteSpace(value))
                 throw new Exception($"{Resources.CommandInputIsNull}!");
@@ -42,15 +37,15 @@ namespace GhostSword.Types
 
         private static Command TryParseInternal(string value, out string error)
         {
-            var command = new Command(value) { type = CommandType.Link };
+            var command = new Command(value) { Type = CommandType.Link };
 
             error = null;
             var sequence = new CharSequence(value);
 
             if (sequence.Current != SLASH)
             {
-                command.name = command.input = value;
-                command.type = CommandType.Common;
+                command.Name = command.Input = value;
+                command.Type = CommandType.Common;
                 return command;
             }
 
@@ -71,8 +66,8 @@ namespace GhostSword.Types
                     AddArgument(arguments, arg);
                 }
 
-                command.name = name;
-                command.arguments = arguments.ToArray();
+                command.Name = name;
+                command.Arguments = arguments.ToArray();
             }
             else
             {
@@ -90,7 +85,6 @@ namespace GhostSword.Types
 
             while (!sequence.IsEos && IsCommandChar(sequence.Current))
                 name += sequence.Pop();
-
             return name != string.Empty;
         }
 
@@ -99,7 +93,6 @@ namespace GhostSword.Types
             if (!sequence.IsEos && sequence.Current == UNDERLINE)
                 if (!TryTakeArguments(sequence, arguments))
                     return false;
-
             return true;
         }
 
@@ -144,9 +137,7 @@ namespace GhostSword.Types
                 arguments.Add(new Argument(element));
         }
 
-        private static bool IsCommandChar(char ch) =>
-            (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9');
-
+        private static bool IsCommandChar(char ch) => (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9');
         public static string Normalize(string value) => value.Trim();
 
         public override string ToString() => Input;

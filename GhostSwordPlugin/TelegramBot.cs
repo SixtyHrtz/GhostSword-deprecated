@@ -47,8 +47,7 @@ namespace GhostSwordPlugin
                 return;
 
             var chat = message.Chat;
-            var incomeMessage = new IncomeMessage(
-                chat.Id, chat.Username, chat.FirstName, chat.LastName, message.Text);
+            var incomeMessage = new IncomeMessage(chat.Id, chat.Username, chat.FirstName, chat.LastName, message.Text);
 
             ServerCore.OnMessage(incomeMessage, this);
         }

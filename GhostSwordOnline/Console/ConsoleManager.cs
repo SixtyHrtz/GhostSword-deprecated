@@ -6,8 +6,8 @@ namespace GhostSwordOnline.Console
 {
     public class ConsoleManager
     {
-        private IServerCore serverCore;
-        private Debug debug;
+        private readonly IServerCore serverCore;
+        private readonly Debug debug;
 
         public ConsoleManager(IServerCore serverCore, Debug debug)
         {

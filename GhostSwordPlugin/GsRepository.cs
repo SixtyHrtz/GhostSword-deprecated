@@ -9,9 +9,11 @@ using System.Linq;
 
 namespace GhostSwordPlugin
 {
-    public class GsRepository : Repository
+    public class GsRepository
     {
-        private List<Func<GsContext, List<AnswerMessage>>> eventMethods;
+        public bool Locked { get; private set; }
+
+        private readonly List<Func<GsContext, List<AnswerMessage>>> eventMethods;
 
         public GsRepository()
         {
@@ -21,17 +23,20 @@ namespace GhostSwordPlugin
             };
         }
 
-        public override List<AnswerMessage> GetEventsResults(DbContext context)
+        public void Lock() => Locked = true;
+        public void Unlock() => Locked = false;
+
+        public List<AnswerMessage> GetEventsResults(GsContext context)
         {
             var messages = new List<AnswerMessage>();
             foreach (var method in eventMethods)
-                messages.AddRange(method((GsContext)context));
+                messages.AddRange(method(context));
 
             return messages;
         }
 
-        public override Data<IUser> GetUser(DbContext context, IncomeMessage message) =>
-            Data<IUser>.CreateValid(GetOrInsertPlayer((GsContext)context, message));
+        public Data<IUser> GetUser(GsContext context, IncomeMessage message) =>
+            Data<IUser>.CreateValid(GetOrInsertPlayer(context, message));
 
         public Player GetOrInsertPlayer(GsContext context, IncomeMessage message)
         {
@@ -46,7 +51,7 @@ namespace GhostSwordPlugin
             return player;
         }
 
-        public override Data<Keyboard> GetKeyboard(DbContext context, IUser user)
+        public Data<Keyboard> GetKeyboard(GsContext context, IUser user)
         {
             Button[] buttons;
             switch (((Player)user).MenuId)

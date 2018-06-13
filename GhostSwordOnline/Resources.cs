@@ -5,7 +5,7 @@
         public const string AppExit = "Выход...";
         public const string Bot = "Бот";
         public const string BotAlreadyStopped = "Бот уже остановлен...";
-        public const string CommandNotFound = "Данная команда не найдена";
+        public const string CommandNotFound = "Команда не найдена";
         public const string ConsoleCommandList = "Список консольных команд";
         public const string FoundMoreThanOnePlugin = "Найдено больше одного плагина";
         public const string Game = "Игра";
