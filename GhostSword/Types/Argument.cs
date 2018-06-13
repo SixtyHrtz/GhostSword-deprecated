@@ -7,7 +7,7 @@ namespace GhostSword.Types
         public object Value { get; private set; }
         public ArgumentType Type { get; private set; }
 
-        public Argument(int? argument)
+        public Argument(uint? argument)
         {
             Value = argument;
             Type = ArgumentType.Integer;

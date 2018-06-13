@@ -7,7 +7,7 @@ namespace GhostSwordPlugin.Models
         public int Id { get; set; }
         public int Place1Id { get; set; }
         public int Place2Id { get; set; }
-        public int JourneyDuration { get; set; }
+        public uint JourneyDuration { get; set; }
         [Required]
         public string BeginText { get; set; }
         [Required]

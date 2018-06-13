@@ -11,7 +11,7 @@ namespace GhostSwordPlugin.Models
         public string Username { get; set; }
         public bool IsBusy { get; set; }
         public int PlaceId { get; set; }
-        public int MenuId { get; set; }
+        public uint MenuId { get; set; }
 
         public Place Place { get; set; }
 

@@ -10,7 +10,7 @@ namespace GhostSwordPlugin.Models
         public Guid Guid { get; set; }
         public int PlayerId { get; set; }
         public int ItemId { get; set; }
-        public int Amount { get; set; }
+        public uint Amount { get; set; }
 
         public Player Player { get; set; }
         public Item Item { get; set; }
@@ -20,11 +20,11 @@ namespace GhostSwordPlugin.Models
 
         public PlayerItem() { }
 
-        public PlayerItem(Player player, Item item, int amount, ItemDiscovery itemDiscovery)
+        public PlayerItem(Player player, Item item, uint amount, ItemDiscovery itemDiscovery)
             : this(player, item, amount) =>
             ItemDiscovery = itemDiscovery;
 
-        public PlayerItem(Player player, Item item, int amount)
+        public PlayerItem(Player player, Item item, uint amount)
         {
             Player = player;
             PlayerId = player.Id;

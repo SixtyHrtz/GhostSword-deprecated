@@ -131,7 +131,7 @@ namespace GhostSword.Types
 
         private static void AddArgument(List<Argument> arguments, string element)
         {
-            if (int.TryParse(element, out int result))
+            if (uint.TryParse(element, out uint result))
                 arguments.Add(new Argument(result));
             else
                 arguments.Add(new Argument(element));

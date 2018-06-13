@@ -9,7 +9,7 @@ namespace GhostSwordPlugin.Models
         public Guid Guid { get; set; }
         public int PlayerId { get; set; }
         public int PlaceAdjacencyId { get; set; }
-        public int Duration { get; set; }
+        public uint Duration { get; set; }
         [Required]
         public DateTime StartTime { get; set; }
 

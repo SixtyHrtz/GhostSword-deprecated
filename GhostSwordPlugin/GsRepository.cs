@@ -112,7 +112,7 @@ namespace GhostSwordPlugin
             return new Message(result);
         }
 
-        public Message BeginJourney(GsContext context, Player player, int placeId)
+        public Message BeginJourney(GsContext context, Player player, uint placeId)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
@@ -130,7 +130,7 @@ namespace GhostSwordPlugin
                 {
                     context.Attach(player);
                     player.IsBusy = true;
-                    context.Journeys.Add(new Journey(player, placeAdjacency, System.DateTime.Now));
+                    context.Journeys.Add(new Journey(player, placeAdjacency, DateTime.Now));
 
                     context.SaveChanges();
                     result = placeAdjacency?.BeginText;
@@ -153,7 +153,7 @@ namespace GhostSwordPlugin
             return new Message(result);
         }
 
-        public Message GetDialogues(GsContext context, Player player, int npcId)
+        public Message GetDialogues(GsContext context, Player player, uint npcId)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
@@ -186,7 +186,7 @@ namespace GhostSwordPlugin
             return new Message($"{result}\n\n{lookup}");
         }
 
-        public Message GetDialogue(GsContext context, Player player, int dialogueId)
+        public Message GetDialogue(GsContext context, Player player, uint dialogueId)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
@@ -242,7 +242,7 @@ namespace GhostSwordPlugin
                 return new Message($"{result} {backpack}");
         }
 
-        public Message DropItem(GsContext context, Player player, int itemId, int amount)
+        public Message DropItem(GsContext context, Player player, uint itemId, uint amount)
         {
             var item = context.PlayerItems
                 .Include(x => x.Item)
@@ -308,7 +308,7 @@ namespace GhostSwordPlugin
                     (x.PlaceId == placeAdjacency.Place1Id) ||
                     (x.PlaceId == placeAdjacency.Place2Id))
                 .ToList().Where(x => x.Rate >= GhostSword.Random.Percent())
-                .Select(x => new PlayerItem(player, x.Item, GhostSword.Random.Integer(x.MinAmount, x.MaxAmount), x)).ToList();
+                .Select(x => new PlayerItem(player, x.Item, GhostSword.Random.UnsignedInteger(x.MinAmount, x.MaxAmount), x)).ToList();
 
             message += string.Join(' ', playerItems
                 .Select(x => x.ItemDiscovery.Text

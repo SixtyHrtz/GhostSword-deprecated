@@ -43,7 +43,7 @@ namespace GhostSwordPlugin
         private void OnMessage(object sender, MessageEventArgs e)
         {
             var message = e.Message;
-            if (message == null || message.Type != MessageType.TextMessage)
+            if (message == null || message.Type != MessageType.Text)
                 return;
 
             var chat = message.Chat;
@@ -62,7 +62,7 @@ namespace GhostSwordPlugin
 
             var buttons = keyboard.Buttons
                 .Select(x => x
-                    .Select(y => new Telegram.Bot.Types.KeyboardButton(y.Text))
+                    .Select(y => new Telegram.Bot.Types.ReplyMarkups.KeyboardButton(y.Text))
                     .ToArray())
                 .ToArray();
             return new ReplyKeyboardMarkup(buttons, true);

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace GhostSwordPlugin.Migrations
 {
@@ -15,9 +14,9 @@ namespace GhostSwordPlugin.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(nullable: true),
                     Emoji = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,11 +43,11 @@ namespace GhostSwordPlugin.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ItemId = table.Column<int>(nullable: false),
-                    MaxAmount = table.Column<int>(nullable: false),
-                    MinAmount = table.Column<int>(nullable: false),
                     PlaceId = table.Column<int>(nullable: false),
+                    Text = table.Column<string>(nullable: false),
                     Rate = table.Column<float>(nullable: false),
-                    Text = table.Column<string>(nullable: false)
+                    MinAmount = table.Column<long>(nullable: false),
+                    MaxAmount = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,8 +72,8 @@ namespace GhostSwordPlugin.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Greetings = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
+                    Greetings = table.Column<string>(nullable: false),
                     PlaceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -94,11 +93,11 @@ namespace GhostSwordPlugin.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    BeginText = table.Column<string>(nullable: false),
-                    EndText = table.Column<string>(nullable: false),
-                    JourneyDuration = table.Column<int>(nullable: false),
                     Place1Id = table.Column<int>(nullable: false),
-                    Place2Id = table.Column<int>(nullable: false)
+                    Place2Id = table.Column<int>(nullable: false),
+                    JourneyDuration = table.Column<long>(nullable: false),
+                    BeginText = table.Column<string>(nullable: false),
+                    EndText = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,11 +122,11 @@ namespace GhostSwordPlugin.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    IsBusy = table.Column<bool>(nullable: false, defaultValue: false),
-                    MenuId = table.Column<int>(nullable: false, defaultValue: 1),
-                    PlaceId = table.Column<int>(nullable: false, defaultValue: 1),
                     UserId = table.Column<long>(nullable: false),
-                    Username = table.Column<string>(nullable: false)
+                    Username = table.Column<string>(nullable: false),
+                    IsBusy = table.Column<bool>(nullable: false, defaultValue: false),
+                    PlaceId = table.Column<int>(nullable: false, defaultValue: 1),
+                    MenuId = table.Column<long>(nullable: false, defaultValue: 1L)
                 },
                 constraints: table =>
                 {
@@ -166,9 +165,9 @@ namespace GhostSwordPlugin.Migrations
                 columns: table => new
                 {
                     Guid = table.Column<Guid>(nullable: false),
-                    Duration = table.Column<int>(nullable: false),
-                    PlaceAdjacencyId = table.Column<int>(nullable: false),
                     PlayerId = table.Column<int>(nullable: false),
+                    PlaceAdjacencyId = table.Column<int>(nullable: false),
+                    Duration = table.Column<long>(nullable: false),
                     StartTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -193,9 +192,9 @@ namespace GhostSwordPlugin.Migrations
                 columns: table => new
                 {
                     Guid = table.Column<Guid>(nullable: false),
-                    Amount = table.Column<int>(nullable: false),
+                    PlayerId = table.Column<int>(nullable: false),
                     ItemId = table.Column<int>(nullable: false),
-                    PlayerId = table.Column<int>(nullable: false)
+                    Amount = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

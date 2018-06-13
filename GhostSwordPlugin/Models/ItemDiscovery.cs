@@ -10,8 +10,8 @@ namespace GhostSwordPlugin.Models
         [Required]
         public string Text { get; set; }
         public float Rate { get; set; }
-        public int MinAmount { get; set; }
-        public int MaxAmount { get; set; }
+        public uint MinAmount { get; set; }
+        public uint MaxAmount { get; set; }
 
         public Item Item { get; set; }
         public Place Place { get; set; }

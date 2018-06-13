@@ -26,8 +26,8 @@ namespace GhostSwordPlugin
         }
 
         private void Register(string input, Func<GsContext, Player, Message> function) => base.Register(input, function);
-        private void Register(string input, Func<GsContext, Player, int, Message> function) => base.Register(input, function);
-        private void Register(string input, Func<GsContext, Player, int, int, Message> function) => base.Register(input, function);
+        private void Register(string input, Func<GsContext, Player, uint, Message> function) => base.Register(input, function);
+        private void Register(string input, Func<GsContext, Player, uint, uint, Message> function) => base.Register(input, function);
 
         public Data<Message> Invoke(GsContext context, IUser user, Command command)
         {
