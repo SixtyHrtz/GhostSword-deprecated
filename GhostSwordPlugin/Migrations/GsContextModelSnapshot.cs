@@ -139,7 +139,13 @@ namespace GhostSwordPlugin.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<long>("Phase");
+
+                    b.Property<int>("PlaceLinkId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PlaceLinkId");
 
                     b.ToTable("Places");
                 });
@@ -169,6 +175,20 @@ namespace GhostSwordPlugin.Migrations
                     b.HasIndex("Place2Id");
 
                     b.ToTable("PlaceAdjacencies");
+                });
+
+            modelBuilder.Entity("GhostSwordPlugin.Models.PlaceLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlaceLinks");
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Player", b =>
@@ -221,6 +241,27 @@ namespace GhostSwordPlugin.Migrations
                     b.ToTable("PlayerItems");
                 });
 
+            modelBuilder.Entity("GhostSwordPlugin.Models.PlayerPlace", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Phase");
+
+                    b.Property<int>("PlaceLinkId");
+
+                    b.Property<int>("PlayerId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlaceLinkId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("PlayerPlaces");
+                });
+
             modelBuilder.Entity("GhostSwordPlugin.Models.Dialogue", b =>
                 {
                     b.HasOne("GhostSwordPlugin.Models.NPC", "NPC")
@@ -263,6 +304,14 @@ namespace GhostSwordPlugin.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("GhostSwordPlugin.Models.Place", b =>
+                {
+                    b.HasOne("GhostSwordPlugin.Models.PlaceLink", "PlaceLink")
+                        .WithMany()
+                        .HasForeignKey("PlaceLinkId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("GhostSwordPlugin.Models.PlaceAdjacency", b =>
                 {
                     b.HasOne("GhostSwordPlugin.Models.Place", "Place1")
@@ -289,6 +338,19 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GhostSwordPlugin.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GhostSwordPlugin.Models.PlayerPlace", b =>
+                {
+                    b.HasOne("GhostSwordPlugin.Models.PlaceLink", "PlaceLink")
+                        .WithMany()
+                        .HasForeignKey("PlaceLinkId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GhostSwordPlugin.Models.Player", "Player")

@@ -17,6 +17,8 @@ namespace GhostSwordPlugin
         public DbSet<PlaceAdjacency> PlaceAdjacencies { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<PlayerItem> PlayerItems { get; set; }
+        public DbSet<PlaceLink> PlaceLinks { get; set; }
+        public DbSet<PlayerPlace> PlayerPlaces { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +49,11 @@ namespace GhostSwordPlugin
             modelBuilder.Entity<Player>()
                 .Property(x => x.MenuId)
                 .HasDefaultValue(1);
+
+            modelBuilder.Entity<Place>()
+                .HasOne(x => x.PlaceLink)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

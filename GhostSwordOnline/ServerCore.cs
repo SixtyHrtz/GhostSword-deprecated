@@ -21,13 +21,6 @@ namespace GhostSwordOnline
         {
             PluginManager.LoadPlugins();
 
-            botManager = new BotPluginManager();
-            var botMessage = botManager.LoadObjects(this);
-            if (!botMessage.IsValid)
-                return botMessage;
-
-            debug.Log(botMessage);
-
             var gameManager = new GamePluginManager();
             var gameMessage = gameManager.LoadObjects(this);
             if (!gameMessage.IsValid)
@@ -35,6 +28,13 @@ namespace GhostSwordOnline
 
             debug.Log(gameMessage);
             game = gameManager.Game;
+
+            botManager = new BotPluginManager();
+            var botMessage = botManager.LoadObjects(this);
+            if (!botMessage.IsValid)
+                return botMessage;
+
+            debug.Log(botMessage);
 
             timer = new Timer(1000);
             timer.Elapsed += OnTimer;

@@ -5,6 +5,7 @@ using GhostSwordPlugin.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace GhostSwordPlugin
@@ -17,6 +18,9 @@ namespace GhostSwordPlugin
 
         public GsRepository()
         {
+            using (var context = new GsContext())
+                context.Database.ExecuteSqlCommand("EXEC InitializePlayersPlaces");
+
             eventMethods = new List<Func<GsContext, List<AnswerMessage>>>
             {
                 ExtractJournes
@@ -46,6 +50,9 @@ namespace GhostSwordPlugin
                 var name = message.Username ?? $"{message.FirstName} {message.LastName}";
                 context.Players.Add(player = new Player(message.Id, name));
                 context.SaveChanges();
+
+                context.Database.ExecuteSqlCommand("EXEC InitializePlayerPlaces @PlayerId",
+                    new SqlParameter("PlayerId", player.Id));
             }
 
             return player;
@@ -106,37 +113,52 @@ namespace GhostSwordPlugin
             var result = string.Empty;
             result += string.Join("\n", context.PlaceAdjacencies
                 .Include(x => x.Place2)
-                .Where(x => x.Place1Id == player.PlaceId)
-                .Select(x => $"{Emoji.WhiteQuestionMark}{x.Place2.Name} /place_{x.Place2.Id}"));
+                    .ThenInclude(y => y.PlaceLink)
+                .Where(x => x.Place1Id == player.PlaceId && context.PlayerPlaces
+                    .Where(y => y.PlayerId == player.Id)
+                    .Any(y => y.PlaceLinkId == x.Place2.PlaceLinkId && y.Phase == x.Place2.Phase))
+                .Select(x => $"{Emoji.WhiteQuestionMark}{x.Place2.Name} /place_{x.Place2.PlaceLink.Name}"));
 
             return new Message(result);
         }
 
-        public Message BeginJourney(GsContext context, Player player, uint placeId)
+        public Message BeginJourney(GsContext context, Player player, string placeLinkName)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
             var result = string.Empty;
-            var place = context.Places
-                .FirstOrDefault(x => x.Id == placeId);
+            var playerPlace = context.PlayerPlaces
+                .Include(x => x.PlaceLink)
+                .FirstOrDefault(x => x.PlaceLink.Name == placeLinkName &&
+                    x.PlayerId == player.Id);
 
-            if (place != null)
+            if (playerPlace != null)
             {
-                var placeAdjacency = context.PlaceAdjacencies
-                    .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == placeId)
-                    .FirstOrDefault();
+                var place = context.Places
+                    .Include(x => x.PlaceLink)
+                    .FirstOrDefault(x => x.PlaceLink.Name == placeLinkName &&
+                        x.Phase == playerPlace.Phase);
 
-                if (placeAdjacency != null)
+                if (place != null)
                 {
-                    context.Attach(player);
-                    player.IsBusy = true;
-                    context.Journeys.Add(new Journey(player, placeAdjacency, DateTime.Now));
+                    var placeAdjacency = context.PlaceAdjacencies
+                        .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == place.Id)
+                        .FirstOrDefault();
 
-                    context.SaveChanges();
-                    result = placeAdjacency?.BeginText;
+                    if (placeAdjacency != null)
+                    {
+                        context.Attach(player);
+                        player.IsBusy = true;
+                        context.Journeys.Add(new Journey(player, placeAdjacency, DateTime.Now));
+
+                        context.SaveChanges();
+                        result = placeAdjacency?.BeginText;
+                    }
+                    else
+                        result += $"{GsResources.PlaceTooFar}!";
                 }
                 else
-                    result += $"{GsResources.PlaceTooFar}!";
+                    result += $"{GsResources.PlaceNotExists}!";
             }
             else
                 result += $"{GsResources.PlaceNotExists}!";
@@ -262,10 +284,10 @@ namespace GhostSwordPlugin
 
         public List<AnswerMessage> ExtractJournes(GsContext context)
         {
-            List<AnswerMessage> result = new List<AnswerMessage>();
+            var result = new List<AnswerMessage>();
             var now = DateTime.Now;
 
-            List<Journey> journeyList = context.Journeys
+            var journeyList = context.Journeys
                 .Include(x => x.Player)
                 .Include(x => x.PlaceAdjacency)
                 .Where(x => (x.StartTime.AddSeconds(x.Duration) < now))
@@ -273,16 +295,16 @@ namespace GhostSwordPlugin
 
             foreach (Journey journey in journeyList)
             {
-                Player player = journey.Player;
+                var player = journey.Player;
 
                 context.Attach(player);
                 player.IsBusy = false;
                 player.PlaceId = journey.PlaceAdjacency.Place2Id;
 
-                string lookup = LookAround(context, journey.Player).Text;
+                var lookup = LookAround(context, journey.Player).Text;
 
                 Message message;
-                string drop = ProcessDiscoveryItems(context, player, journey.PlaceAdjacency);
+                var drop = ProcessDiscoveryItems(context, player, journey.PlaceAdjacency);
                 if (drop == string.Empty)
                     message = new Message($"{journey.PlaceAdjacency?.EndText}\n\n{lookup}");
                 else
@@ -312,7 +334,7 @@ namespace GhostSwordPlugin
 
             message += string.Join(' ', playerItems
                 .Select(x => x.ItemDiscovery.Text
-                    .Replace("[[Value]]", $"{x.Item.Emoji} {x.Amount} {x.Item.Name.ToLower()}")));
+                    .Replace("[VALUE]", $"{x.Item.Emoji} {x.Amount} {x.Item.Name.ToLower()}")));
 
             context.PlayerItems
                 .Join(playerItems,
