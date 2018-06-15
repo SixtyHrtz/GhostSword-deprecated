@@ -22,6 +22,27 @@ namespace GhostSwordPlugin
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Player>()
+                .Property(x => x.PlaceId)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<Player>()
+                .Property(x => x.MenuId)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<Player>()
+                .Property(x => x.IsBusy)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<PlaceLink>()
+                .HasIndex(x => x.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Place>()
+                .HasOne(x => x.PlaceLink)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Dialogue>()
                 .Property(x => x.Text)
                 .HasDefaultValue(string.Empty);
@@ -37,23 +58,6 @@ namespace GhostSwordPlugin
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasForeignKey(x => x.Place2Id);
-
-            modelBuilder.Entity<Player>()
-                .Property(x => x.IsBusy)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<Player>()
-                .Property(x => x.PlaceId)
-                .HasDefaultValue(1);
-
-            modelBuilder.Entity<Player>()
-                .Property(x => x.MenuId)
-                .HasDefaultValue(1);
-
-            modelBuilder.Entity<Place>()
-                .HasOne(x => x.PlaceLink)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
