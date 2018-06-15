@@ -137,14 +137,14 @@ namespace GhostSwordPlugin
                     x.playerPlace.PlayerId == player.Id);
 
             if (place == null)
-                return new Message($"{GsResources.PlaceNotExists}!");
+                return new Message(GsResources.PlaceNotExists);
 
             var placeAdjacency = context.PlaceAdjacencies
                 .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == place.foundPlace.Id)
                 .FirstOrDefault();
 
             if (placeAdjacency == null)
-                return new Message($"{GsResources.PlaceTooFar}!");
+                return new Message(GsResources.PlaceTooFar);
 
             context.Attach(player);
             player.IsBusy = true;
@@ -169,10 +169,10 @@ namespace GhostSwordPlugin
                 .FirstOrDefault(x => x.Id == npcId);
 
             if (npc == null)
-                return GetLookupMessage(context, player, $"{GsResources.NPCNotExists}!");
+                return GetLookupMessage(context, player, GsResources.NPCNotExists);
 
             if (npc.PlaceId != player.PlaceId)
-                return GetLookupMessage(context, player, $"{GsResources.NPCTooFar}!");
+                return GetLookupMessage(context, player, GsResources.NPCTooFar);
 
             if (npc.Dialogues.Count == 0)
                 return GetLookupMessage(context, player, GsResources.NothingToTalkAbout);
@@ -190,10 +190,10 @@ namespace GhostSwordPlugin
                 .FirstOrDefault(x => x.Id == dialogueId);
 
             if (dialogue == null)
-                return GetLookupMessage(context, player, $"{GsResources.DialogNotExists}!");
+                return GetLookupMessage(context, player, GsResources.DialogNotExists);
 
             if (dialogue.NPC.PlaceId != player.PlaceId)
-                return GetLookupMessage(context, player, $"{GsResources.NPCTooFar}!");
+                return GetLookupMessage(context, player, GsResources.NPCTooFar);
 
             return new Message($"<b>{dialogue.Name}</b>\n{dialogue.Text}");
         }
@@ -230,10 +230,10 @@ namespace GhostSwordPlugin
                 .FirstOrDefault();
 
             if (item == null)
-                return new Message($"{GsResources.ItemIsNotInBackpack}!\n\n{GetDropItemList(context, player)}");
+                return new Message($"{GsResources.ItemIsNotInBackpack}\n\n{GetDropItemList(context, player)}");
 
             if (item.Amount < amount)
-                return new Message($"{GsResources.ThereIsNoSoManyItemsInBackPack}!\n\n{GetDropItemList(context, player)}");
+                return new Message($"{GsResources.ThereIsNoSoManyItemsInBackpack}\n\n{GetDropItemList(context, player)}");
 
             item.Amount -= amount;
             context.SaveChanges();

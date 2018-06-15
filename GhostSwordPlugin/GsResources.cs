@@ -12,17 +12,17 @@ namespace GhostSwordPlugin
 
         public static string BackpackContent = "Покопавшись в рюкзаке ты нашёл";
         public static string BackpackIsEmpty = "Рюкзак пуст...";
-        public static string DialogNotExists = "Такого диалога не существует";
+        public static string DialogNotExists = "Такого диалога не существует!";
         public static string Dropped = "Выброшено";
-        public static string ItemIsNotInBackpack = "Такого предмета в рюкзаке нет";
+        public static string ItemIsNotInBackpack = "Такого предмета в рюкзаке нет!";
         public static string ItemsToDrop = "Эти предметы можно выкинуть";
         public static string Nearby = "Рядом находятся";
         public static string NothingToTalkAbout = "С этим персонажем не о чем поговорить...";
-        public static string NPCNotExists = "Такого персонажа не существует";
-        public static string NPCTooFar = "Этот персонаж слишком далеко";
-        public static string PlaceTooFar = "Это место слишком далеко";
-        public static string PlaceNotExists = "Такого места не существует";
-        public static string ThereIsNoSoManyItemsInBackPack = "Столько предметов в рюкзаке нет";
+        public static string NPCNotExists = "Такого персонажа не существует!";
+        public static string NPCTooFar = "Этот персонаж слишком далеко!";
+        public static string PlaceTooFar = "Это место слишком далеко!";
+        public static string PlaceNotExists = "Такого места не существует!";
+        public static string ThereIsNoSoManyItemsInBackpack = "Столько предметов в рюкзаке нет!";
 
         public static string LookAround = $"{Emoji.Eye} Осмотреться";
         public static string Backpack = $"{Emoji.SchoolBackpack} Рюкзак";
