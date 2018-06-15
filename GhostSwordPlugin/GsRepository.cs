@@ -88,6 +88,12 @@ namespace GhostSwordPlugin
             return Data<Keyboard>.CreateValid(new Keyboard(buttons));
         }
 
+        private Message GetLookupMessage(GsContext context, Player player, string text)
+        {
+            var lookup = LookAround(context, player).Text;
+            return new Message($"{text}\n\n{lookup}");
+        }
+
         public Message LookAround(GsContext context, Player player)
         {
             var places = GetAdjacentPlaces(context, player).Text;
@@ -108,130 +114,88 @@ namespace GhostSwordPlugin
             return LookAround(context, player);
         }
 
-        public Message GetAdjacentPlaces(GsContext context, Player player)
-        {
-            var result = string.Empty;
-            result += string.Join("\n", context.PlaceAdjacencies
+        public Message GetAdjacentPlaces(GsContext context, Player player) =>
+            new Message(string.Join("\n", context.PlaceAdjacencies
                 .Include(x => x.Place2)
                     .ThenInclude(y => y.PlaceLink)
                 .Where(x => x.Place1Id == player.PlaceId && context.PlayerPlaces
                     .Where(y => y.PlayerId == player.Id)
                     .Any(y => y.PlaceLinkId == x.Place2.PlaceLinkId && y.Phase == x.Place2.Phase))
-                .Select(x => $"{Emoji.WhiteQuestionMark}{x.Place2.Name} /place_{x.Place2.PlaceLink.Name}"));
-
-            return new Message(result);
-        }
+                .Select(x => $"{Emoji.WhiteQuestionMark}{x.Place2.Name} /place_{x.Place2.PlaceLink.Name}")));
 
         public Message BeginJourney(GsContext context, Player player, string placeLinkName)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
-            var result = string.Empty;
-            var playerPlace = context.PlayerPlaces
+            var place = context.PlayerPlaces
                 .Include(x => x.PlaceLink)
-                .FirstOrDefault(x => x.PlaceLink.Name == placeLinkName &&
-                    x.PlayerId == player.Id);
+                .Join(context.Places,
+                    x => new { x.PlaceLinkId, x.Phase },
+                    y => new { y.PlaceLinkId, y.Phase },
+                    (playerPlace, foundPlace) => new { playerPlace, foundPlace })
+                .FirstOrDefault(x => x.playerPlace.PlaceLink.Name == placeLinkName &&
+                    x.playerPlace.PlayerId == player.Id);
 
-            if (playerPlace != null)
-            {
-                var place = context.Places
-                    .Include(x => x.PlaceLink)
-                    .FirstOrDefault(x => x.PlaceLink.Name == placeLinkName &&
-                        x.Phase == playerPlace.Phase);
+            if (place == null)
+                return new Message($"{GsResources.PlaceNotExists}!");
 
-                if (place != null)
-                {
-                    var placeAdjacency = context.PlaceAdjacencies
-                        .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == place.Id)
-                        .FirstOrDefault();
+            var placeAdjacency = context.PlaceAdjacencies
+                .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == place.foundPlace.Id)
+                .FirstOrDefault();
 
-                    if (placeAdjacency != null)
-                    {
-                        context.Attach(player);
-                        player.IsBusy = true;
-                        context.Journeys.Add(new Journey(player, placeAdjacency, DateTime.Now));
+            if (placeAdjacency == null)
+                return new Message($"{GsResources.PlaceTooFar}!");
 
-                        context.SaveChanges();
-                        result = placeAdjacency?.BeginText;
-                    }
-                    else
-                        result += $"{GsResources.PlaceTooFar}!";
-                }
-                else
-                    result += $"{GsResources.PlaceNotExists}!";
-            }
-            else
-                result += $"{GsResources.PlaceNotExists}!";
+            context.Attach(player);
+            player.IsBusy = true;
+            context.Journeys.Add(new Journey(player, placeAdjacency, DateTime.Now));
+            context.SaveChanges();
 
-            return new Message(result);
+            return new Message(placeAdjacency?.BeginText);
         }
 
-        public Message GetNPCs(GsContext context, Player player)
-        {
-            var result = string.Join("\n", context.NPCs
+        public Message GetNPCs(GsContext context, Player player) =>
+            new Message(string.Join("\n", context.NPCs
                 .Where(x => x.PlaceId == player.PlaceId)
-                .Select(x => $"{Emoji.BustInSilhouette}{x.Name} /npc_{x.Id}"));
-
-            return new Message(result);
-        }
+                .Select(x => $"{Emoji.BustInSilhouette}{x.Name} /npc_{x.Id}")));
 
         public Message GetDialogues(GsContext context, Player player, uint npcId)
         {
-            if (player.IsBusy) return GsResources.PlayerIsBusy;
+            if (player.IsBusy)
+                return GsResources.PlayerIsBusy;
 
             var npc = context.NPCs
                 .Include(x => x.Dialogues)
                 .FirstOrDefault(x => x.Id == npcId);
 
-            var result = string.Empty;
-            if (npc != null)
-            {
-                if (npc.PlaceId == player.PlaceId)
-                {
-                    if (npc.Dialogues.Count != 0)
-                    {
-                        result += $"{npc.Greetings}\n\n";
-                        result += string.Join("\n", npc.Dialogues
-                            .Select(x => $"{Emoji.SpeechBalloon}{x.Name} /dial_{x.Id}"));
-                        return new Message(result);
-                    }
-                    else
-                        result = GsResources.NothingToTalkAbout;
-                }
-                else
-                    result = $"{GsResources.NPCTooFar}!";
-            }
-            else
-                result = $"{GsResources.NPCNotExists}!";
+            if (npc == null)
+                return GetLookupMessage(context, player, $"{GsResources.NPCNotExists}!");
 
-            var lookup = LookAround(context, player).Text;
-            return new Message($"{result}\n\n{lookup}");
+            if (npc.PlaceId != player.PlaceId)
+                return GetLookupMessage(context, player, $"{GsResources.NPCTooFar}!");
+
+            if (npc.Dialogues.Count == 0)
+                return GetLookupMessage(context, player, GsResources.NothingToTalkAbout);
+
+            return new Message($"{npc.Greetings}\n\n" + string.Join("\n", npc.Dialogues
+                .Select(x => $"{Emoji.SpeechBalloon}{x.Name} /dial_{x.Id}")));
         }
 
         public Message GetDialogue(GsContext context, Player player, uint dialogueId)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
-            var result = string.Empty;
             var dialogue = context.Dialogues
                 .Include(x => x.NPC)
                 .FirstOrDefault(x => x.Id == dialogueId);
 
-            if (dialogue != null)
-            {
-                if (dialogue.NPC.PlaceId == player.PlaceId)
-                {
-                    result = $"<b>{dialogue.Name}</b>\n{dialogue.Text}";
-                    return new Message(result);
-                }
-                else
-                    result = $"{GsResources.NPCTooFar}!";
-            }
-            else
-                result = $"{GsResources.DialogNotExists}!";
+            if (dialogue == null)
+                return GetLookupMessage(context, player, $"{GsResources.DialogNotExists}!");
 
-            var lookup = LookAround(context, player).Text;
-            return new Message($"{result}\n{lookup}");
+            if (dialogue.NPC.PlaceId != player.PlaceId)
+                return GetLookupMessage(context, player, $"{GsResources.NPCTooFar}!");
+
+            return new Message($"<b>{dialogue.Name}</b>\n{dialogue.Text}");
         }
 
         public Message InspectBackpack(GsContext context, Player player)
@@ -243,12 +207,9 @@ namespace GhostSwordPlugin
             var backpack = string.Join("\n", context.PlayerItems
                 .Where(x => x.PlayerId == player.Id)
                 .Select(x => $"{x.Item.Emoji} {x.Item.Name} x{x.Amount}"));
+            backpack = (string.IsNullOrEmpty(backpack)) ? GsResources.BackpackIsEmpty : backpack;
 
-            var result = $"{Emoji.SchoolBackpack} <b>{GsResources.BackpackContent}:</b>\n\n";
-            if (string.IsNullOrEmpty(backpack))
-                return new Message(result + GsResources.BackpackIsEmpty);
-            else
-                return new Message(result + backpack);
+            return new Message($"{Emoji.SchoolBackpack} <b>{GsResources.BackpackContent}:</b>\n\n{backpack}");
         }
 
         public Message GetDropItemList(GsContext context, Player player)
@@ -256,12 +217,9 @@ namespace GhostSwordPlugin
             var backpack = string.Join("\n", context.PlayerItems
                 .Where(x => x.PlayerId == player.Id)
                 .Select(x => $"{x.Item.Emoji} {x.Item.Name} x{x.Amount} /drop_{x.ItemId}_1"));
+            backpack = (string.IsNullOrEmpty(backpack)) ? GsResources.BackpackIsEmpty : backpack;
 
-            var result = $"{Emoji.SchoolBackpack} <b>{GsResources.ItemsToDrop}:</b>\n\n";
-            if (string.IsNullOrEmpty(backpack))
-                return new Message($"{result} {GsResources.BackpackIsEmpty}");
-            else
-                return new Message($"{result} {backpack}");
+            return new Message($"{Emoji.SchoolBackpack} <b>{GsResources.ItemsToDrop}:</b>\n\n{backpack}");
         }
 
         public Message DropItem(GsContext context, Player player, uint itemId, uint amount)
@@ -273,6 +231,7 @@ namespace GhostSwordPlugin
 
             if (item == null)
                 return new Message($"{GsResources.ItemIsNotInBackpack}!\n\n{GetDropItemList(context, player)}");
+
             if (item.Amount < amount)
                 return new Message($"{GsResources.ThereIsNoSoManyItemsInBackPack}!\n\n{GetDropItemList(context, player)}");
 
@@ -320,8 +279,6 @@ namespace GhostSwordPlugin
 
         private string ProcessDiscoveryItems(GsContext context, Player player, PlaceAdjacency placeAdjacency)
         {
-            var message = string.Empty;
-
             context.Players.Attach(player);
 
             var playerItems = context.ItemDiscoveries
@@ -330,21 +287,24 @@ namespace GhostSwordPlugin
                     (x.PlaceId == placeAdjacency.Place1Id) ||
                     (x.PlaceId == placeAdjacency.Place2Id))
                 .ToList().Where(x => x.Rate >= GhostSword.Random.Percent())
-                .Select(x => new PlayerItem(player, x.Item, GhostSword.Random.UnsignedInteger(x.MinAmount, x.MaxAmount), x)).ToList();
+                .Select(x => new PlayerItem(player, x.Item, GhostSword.Random.UnsignedInteger(x.MinAmount, x.MaxAmount), x))
+                .ToList();
 
-            message += string.Join(' ', playerItems
-                .Select(x => x.ItemDiscovery.Text
-                    .Replace("[VALUE]", $"{x.Item.Emoji} {x.Amount} {x.Item.Name.ToLower()}")));
+            var message = string.Join(' ', playerItems
+                 .Select(x => x.ItemDiscovery.Text
+                     .Replace("[VALUE]", $"{x.Item.Emoji} {x.Amount} {x.Item.Name.ToLower()}")));
 
             context.PlayerItems
                 .Join(playerItems,
                     x => new { x.PlayerId, x.ItemId },
                     y => new { y.PlayerId, y.ItemId },
                     (source, destination) => new { source, destination })
-                .ToList().ForEach((x) => x.source.Amount += x.destination.Amount);
+                .ToList()
+                .ForEach((x) => x.source.Amount += x.destination.Amount);
 
             context.PlayerItems.AddRange(playerItems.Where(x => !context.PlayerItems
-                .Any(y => y.PlayerId == x.PlayerId && y.ItemId == x.ItemId)).ToList());
+                .Any(y => y.PlayerId == x.PlayerId && y.ItemId == x.ItemId))
+                .ToList());
 
             context.SaveChanges();
             return message;

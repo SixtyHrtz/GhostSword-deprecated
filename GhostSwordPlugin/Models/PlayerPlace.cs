@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int PlayerId { get; set; }
         public int PlaceLinkId { get; set; }
-        public int Phase { get; set; }
+        public uint Phase { get; set; }
 
         public Player Player { get; set; }
         public PlaceLink PlaceLink { get; set; }
