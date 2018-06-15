@@ -250,7 +250,9 @@ namespace GhostSwordPlugin.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("Phase");
+                    b.Property<long>("Phase")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(1L);
 
                     b.Property<int>("PlaceLinkId");
 

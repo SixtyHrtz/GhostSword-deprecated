@@ -51,8 +51,14 @@ namespace GhostSwordPlugin
                 context.Players.Add(player = new Player(message.Id, name));
                 context.SaveChanges();
 
-                context.Database.ExecuteSqlCommand("EXEC InitializePlayerPlaces @PlayerId",
-                    new SqlParameter("PlayerId", player.Id));
+                context.PlayerPlaces.AddRange(
+                    context.PlaceLinks
+                        .Select(x => new PlayerPlace()
+                        {
+                            PlayerId = player.Id,
+                            PlaceLinkId = x.Id
+                        }));
+                context.SaveChanges();
             }
 
             return player;

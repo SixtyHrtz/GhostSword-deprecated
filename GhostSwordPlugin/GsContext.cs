@@ -38,6 +38,10 @@ namespace GhostSwordPlugin
                 .HasIndex(x => x.Name)
                 .IsUnique();
 
+            modelBuilder.Entity<PlayerPlace>()
+                .Property(x => x.Phase)
+                .HasDefaultValue(1);
+
             modelBuilder.Entity<Place>()
                 .HasOne(x => x.PlaceLink)
                 .WithMany()
