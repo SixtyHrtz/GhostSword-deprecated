@@ -5,7 +5,6 @@ using GhostSwordPlugin.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace GhostSwordPlugin
@@ -13,6 +12,8 @@ namespace GhostSwordPlugin
     public class GsRepository
     {
         public bool Locked { get; private set; }
+
+        private readonly string[] weatherEmojies = new string[] { "🌙", "☀️" };
 
         private readonly List<Func<GsContext, List<AnswerMessage>>> eventMethods;
 
@@ -102,9 +103,23 @@ namespace GhostSwordPlugin
 
         public Message LookAround(GsContext context, Player player)
         {
+            var dayTime = GetTimeOfDay();
             var places = GetAdjacentPlaces(context, player).Text;
             var npcs = GetNPCs(context, player).Text;
-            return new Message($"{Emoji.Eye} <b>{GsResources.Nearby}:</b>\n\n{places}\n{npcs}");
+            return new Message($"{dayTime}\n\n{Emoji.Eye} <b>{GsResources.Nearby}:</b>\n{places}\n{npcs}");
+        }
+
+        private string GetTimeOfDay()
+        {
+            var coefficient = 8 / 24f;
+
+            var newSeconds = DateTime.Now.TimeOfDay.TotalSeconds / coefficient;
+            newSeconds = (newSeconds % 28800) * 3;
+
+            var newTime = TimeSpan.FromSeconds(newSeconds);
+            var emojiIndex = (newTime.Hours < 8 || newTime.Hours >= 20) ? 0 : 1;
+
+            return $"<b>Текущее время суток:</b> {weatherEmojies[emojiIndex]}";
         }
 
         public Message BackToPrevMenu(GsContext context, Player player)
