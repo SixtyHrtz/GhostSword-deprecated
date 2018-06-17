@@ -176,7 +176,7 @@ namespace GhostSwordPlugin
         }
 
         public Message GetNPCs(GsContext context, Player player) =>
-            new Message(string.Join("\n", context.NPCs
+            new Message(string.Join("\n", context.NpcInfos
                 .Where(x => x.PlaceId == player.PlaceId)
                 .Select(x => $"{Emoji.BustInSilhouette}{x.Name} /npc_{x.Id}")));
 
@@ -185,7 +185,7 @@ namespace GhostSwordPlugin
             if (player.IsBusy)
                 return GsResources.PlayerIsBusy;
 
-            var npc = context.NPCs
+            var npc = context.NpcInfos
                 .Include(x => x.Dialogues)
                 .FirstOrDefault(x => x.Id == npcId);
 
@@ -207,13 +207,13 @@ namespace GhostSwordPlugin
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
             var dialogue = context.Dialogues
-                .Include(x => x.NPC)
+                .Include(x => x.NpcInfo)
                 .FirstOrDefault(x => x.Id == dialogueId);
 
             if (dialogue == null)
                 return GetLookupMessage(context, player, GsResources.DialogNotExists);
 
-            if (dialogue.NPC.PlaceId != player.PlaceId)
+            if (dialogue.NpcInfo.PlaceId != player.PlaceId)
                 return GetLookupMessage(context, player, GsResources.NPCTooFar);
 
             return new Message($"<b>{dialogue.Name}</b>\n{dialogue.Text}");

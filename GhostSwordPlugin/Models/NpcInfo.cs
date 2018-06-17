@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GhostSwordPlugin.Models
 {
-    public class NPC
+    public class NpcInfo
     {
         public int Id { get; set; }
         [Required]

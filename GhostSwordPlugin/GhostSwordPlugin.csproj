@@ -5,8 +5,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>F:\GitHub\GhostSword\GhostSwordOnline\bin\Debug\netcoreapp2.0\Plugins\</OutputPath>
+    <OutputPath></OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20180617072004_Update.cs" />
+    <Compile Remove="Migrations\20180617072119_Update.cs" />
+    <Compile Remove="Migrations\20180617072414_Update.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
@@ -26,5 +32,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(ProjectDir)bin\Debug\netcoreapp2.0\GhostSwordPlugin.dll&quot; &quot;$(SolutionDir)GhostSwordOnline\bin\Debug\netcoreapp2.0\Plugins&quot;" />
+  </Target>
 
 </Project>

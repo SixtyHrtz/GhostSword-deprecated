@@ -12,7 +12,7 @@ namespace GhostSwordPlugin
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDiscovery> ItemDiscoveries { get; set; }
         public DbSet<Journey> Journeys { get; set; }
-        public DbSet<NPC> NPCs { get; set; }
+        public DbSet<NpcInfo> NpcInfos { get; set; }
         public DbSet<Place> Places { get; set; }
         public DbSet<PlaceAdjacency> PlaceAdjacencies { get; set; }
         public DbSet<Player> Players { get; set; }

@@ -25,7 +25,7 @@ namespace GhostSwordPlugin.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("NPCId");
+                    b.Property<int>("NpcInfoId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -36,7 +36,7 @@ namespace GhostSwordPlugin.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NPCId");
+                    b.HasIndex("NpcInfoId");
 
                     b.ToTable("Dialogues");
                 });
@@ -109,7 +109,7 @@ namespace GhostSwordPlugin.Migrations
                     b.ToTable("Journeys");
                 });
 
-            modelBuilder.Entity("GhostSwordPlugin.Models.NPC", b =>
+            modelBuilder.Entity("GhostSwordPlugin.Models.NpcInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +127,7 @@ namespace GhostSwordPlugin.Migrations
 
                     b.HasIndex("PlaceId");
 
-                    b.ToTable("NPCs");
+                    b.ToTable("NpcInfos");
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Place", b =>
@@ -269,9 +269,9 @@ namespace GhostSwordPlugin.Migrations
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Dialogue", b =>
                 {
-                    b.HasOne("GhostSwordPlugin.Models.NPC", "NPC")
+                    b.HasOne("GhostSwordPlugin.Models.NpcInfo", "NpcInfo")
                         .WithMany("Dialogues")
-                        .HasForeignKey("NPCId")
+                        .HasForeignKey("NpcInfoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -301,7 +301,7 @@ namespace GhostSwordPlugin.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("GhostSwordPlugin.Models.NPC", b =>
+            modelBuilder.Entity("GhostSwordPlugin.Models.NpcInfo", b =>
                 {
                     b.HasOne("GhostSwordPlugin.Models.Place", "Place")
                         .WithMany()
