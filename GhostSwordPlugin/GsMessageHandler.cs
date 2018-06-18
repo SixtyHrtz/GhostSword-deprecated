@@ -19,8 +19,10 @@ namespace GhostSwordPlugin
             Register("/dial", repository.GetDialogue);
             Register("/place", repository.BeginJourney);
             Register("/drop", repository.DropItem);
+            Register("/rem", repository.RemoveItem);
+            Register("/use", repository.UseItem);
             Register(GsResources.LookAround, repository.LookAround);
-            Register(GsResources.Backpack, repository.InspectBackpack);
+            Register(GsResources.Backpack, repository.InspectInventory);
             Register(GsResources.Drop, repository.GetDropItemList);
             Register(GsResources.Back, repository.BackToPrevMenu);
         }

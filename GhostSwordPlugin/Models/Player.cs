@@ -1,4 +1,6 @@
 ﻿using GhostSword.Interfaces;
+using GhostSwordPlugin.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace GhostSwordPlugin.Models
@@ -11,9 +13,21 @@ namespace GhostSwordPlugin.Models
         public string Username { get; set; }
         public bool IsBusy { get; set; }
         public int PlaceId { get; set; }
-        public uint MenuId { get; set; }
+        public MenuType MenuId { get; set; }
+
+        public Guid? HeadItemGuid { get; set; }
+        public Guid? ChestItemGuid { get; set; }
+        public Guid? HandsItemGuid { get; set; }
+        public Guid? LegsItemGuid { get; set; }
+        public Guid? FeetsItemGuid { get; set; }
 
         public Place Place { get; set; }
+
+        public PlayerItem HeadItem { get; set; }
+        public PlayerItem ChestItem { get; set; }
+        public PlayerItem HandsItem { get; set; }
+        public PlayerItem LegsItem { get; set; }
+        public PlayerItem FeetsItem { get; set; }
 
         public Player() { }
 

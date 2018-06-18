@@ -1,5 +1,6 @@
 ﻿using GhostSword;
 using GhostSword.Types;
+using GhostSwordPlugin.Enums;
 using GhostSwordPlugin.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,17 +23,17 @@ namespace GhostSwordPlugin
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Player>()
-                .Property(x => x.PlaceId)
-                .HasDefaultValue(1);
-
-            modelBuilder.Entity<Player>()
-                .Property(x => x.MenuId)
-                .HasDefaultValue(1);
-
-            modelBuilder.Entity<Player>()
-                .Property(x => x.IsBusy)
-                .HasDefaultValue(false);
+            modelBuilder.Entity<Player>(x =>
+            {
+                x.Property(y => y.PlaceId).HasDefaultValue(1);
+                x.Property(y => y.MenuId).HasDefaultValue(MenuType.Main);
+                x.Property(y => y.IsBusy).HasDefaultValue(false);
+                x.HasOne(y => y.HeadItem).WithMany().OnDelete(DeleteBehavior.Restrict);
+                x.HasOne(y => y.ChestItem).WithMany().OnDelete(DeleteBehavior.Restrict);
+                x.HasOne(y => y.HandsItem).WithMany().OnDelete(DeleteBehavior.Restrict);
+                x.HasOne(y => y.LegsItem).WithMany().OnDelete(DeleteBehavior.Restrict);
+                x.HasOne(y => y.FeetsItem).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
 
             modelBuilder.Entity<PlaceLink>()
                 .HasIndex(x => x.Name)
@@ -41,6 +42,13 @@ namespace GhostSwordPlugin
             modelBuilder.Entity<PlayerPlace>()
                 .Property(x => x.Phase)
                 .HasDefaultValue(1);
+
+            modelBuilder.Entity<PlayerItem>()
+                .Property(x => x.Guid)
+                .HasDefaultValueSql("newsequentialid()");
+
+            modelBuilder.Entity<PlayerItem>()
+                .HasOne(x => x.Player).WithMany();
 
             modelBuilder.Entity<Place>()
                 .HasOne(x => x.PlaceLink)
@@ -51,17 +59,18 @@ namespace GhostSwordPlugin
                 .Property(x => x.Text)
                 .HasDefaultValue(string.Empty);
 
-            modelBuilder.Entity<PlaceAdjacency>()
-                .HasOne(x => x.Place1)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasForeignKey(x => x.Place1Id);
+            modelBuilder.Entity<PlaceAdjacency>(x =>
+            {
+                x.HasOne(y => y.Place1)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasForeignKey(y => y.Place1Id);
 
-            modelBuilder.Entity<PlaceAdjacency>()
-                .HasOne(x => x.Place2)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasForeignKey(x => x.Place2Id);
+                x.HasOne(y => y.Place2)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasForeignKey(y => y.Place2Id);
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
