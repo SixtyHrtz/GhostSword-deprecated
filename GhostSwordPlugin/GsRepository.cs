@@ -300,7 +300,14 @@ namespace GhostSwordPlugin
                 return new Message($"{GsResources.BackpackItemNotExists}");
 
             context.Players.Attach(player);
-            player.ChestItemGuid = item.Guid;
+            switch (item.Item.ItemTypeId)
+            {
+                case 2: player.HeadItemGuid = item.Guid; break;
+                case 3: player.ChestItemGuid = item.Guid; break;
+                case 4: player.HandsItemGuid = item.Guid; break;
+                case 5: player.LegsItemGuid = item.Guid; break;
+                case 6: player.FeetsItemGuid = item.Guid; break;
+            }
             context.SaveChanges();
 
             return new Message($"{GsResources.Equiped}: {item.Item.FullName}");

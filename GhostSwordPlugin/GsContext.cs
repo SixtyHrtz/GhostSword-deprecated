@@ -11,6 +11,7 @@ namespace GhostSwordPlugin
     {
         public DbSet<Dialogue> Dialogues { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<ItemDiscovery> ItemDiscoveries { get; set; }
         public DbSet<Journey> Journeys { get; set; }
         public DbSet<NpcInfo> NpcInfos { get; set; }
@@ -41,6 +42,10 @@ namespace GhostSwordPlugin
 
             modelBuilder.Entity<PlayerPlace>()
                 .Property(x => x.Phase)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<Item>()
+                .Property(x => x.ItemTypeId)
                 .HasDefaultValue(1);
 
             modelBuilder.Entity<PlayerItem>()

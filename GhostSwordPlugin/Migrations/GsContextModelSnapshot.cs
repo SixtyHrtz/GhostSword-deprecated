@@ -52,10 +52,16 @@ namespace GhostSwordPlugin.Migrations
 
                     b.Property<string>("Emoji");
 
+                    b.Property<int>("ItemTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemTypeId");
 
                     b.ToTable("Items");
                 });
@@ -86,6 +92,19 @@ namespace GhostSwordPlugin.Migrations
                     b.HasIndex("PlaceId");
 
                     b.ToTable("ItemDiscoveries");
+                });
+
+            modelBuilder.Entity("GhostSwordPlugin.Models.ItemType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemTypes");
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Journey", b =>
@@ -294,6 +313,14 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.NpcInfo", "NpcInfo")
                         .WithMany("Dialogues")
                         .HasForeignKey("NpcInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GhostSwordPlugin.Models.Item", b =>
+                {
+                    b.HasOne("GhostSwordPlugin.Models.ItemType", "ItemType")
+                        .WithMany()
+                        .HasForeignKey("ItemTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
