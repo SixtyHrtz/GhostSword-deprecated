@@ -48,12 +48,11 @@ namespace GhostSwordPlugin
                 .Property(x => x.ItemTypeId)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<PlayerItem>()
-                .Property(x => x.Guid)
-                .HasDefaultValueSql("newsequentialid()");
-
-            modelBuilder.Entity<PlayerItem>()
-                .HasOne(x => x.Player).WithMany();
+            modelBuilder.Entity<PlayerItem>(x =>
+            {
+                x.Property(y => y.Guid).HasDefaultValueSql("newsequentialid()");
+                x.HasOne(y => y.Player).WithMany().OnDelete(DeleteBehavior.Restrict);
+            });
 
             modelBuilder.Entity<Place>()
                 .HasOne(x => x.PlaceLink)

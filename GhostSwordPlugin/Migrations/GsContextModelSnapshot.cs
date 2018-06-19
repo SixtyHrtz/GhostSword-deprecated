@@ -422,7 +422,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.PlayerPlace", b =>
