@@ -4,6 +4,7 @@ using GhostSwordPlugin.Enums;
 using GhostSwordPlugin.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 
 namespace GhostSwordPlugin
 {
@@ -24,6 +25,10 @@ namespace GhostSwordPlugin
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var relationships = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys());
+            foreach (var relationship in relationships)
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+
             modelBuilder.Entity<Player>(x =>
             {
                 x.Property(y => y.PlaceId).HasDefaultValue(1);

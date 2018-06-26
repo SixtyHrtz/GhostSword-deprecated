@@ -14,8 +14,6 @@ namespace GhostSwordPlugin
     {
         public bool Locked { get; private set; }
 
-        private readonly string[] weatherEmojies = new string[] { "🌙", "☀️" };
-
         private readonly List<Func<GsContext, List<AnswerMessage>>> eventMethods;
 
         public GsRepository()
@@ -117,6 +115,9 @@ namespace GhostSwordPlugin
             return new Message($"{dayTime}\n\n{Emoji.Eye} <b>{GsResources.Nearby}:</b>\n{places}\n{npcs}");
         }
 
+        private readonly string[] weatherEmojies = new string[] { "🌚", "🌙", "🌞", "🌙" };
+        private readonly string[] weatherNames = new string[] { "Ночь", "Утро", "День", "Вечер" };
+
         private string GetTimeOfDay()
         {
             var coefficient = 8 / 24f;
@@ -125,9 +126,13 @@ namespace GhostSwordPlugin
             newSeconds = (newSeconds % 28800) * 3;
 
             var newTime = TimeSpan.FromSeconds(newSeconds);
-            var emojiIndex = (newTime.Hours < 8 || newTime.Hours >= 20) ? 0 : 1;
+            newTime = TimeSpan.FromHours(18);
+            var fourthIndex = (int)Math.Floor(newTime.Hours / 6.0);
 
-            return $"<b>{GsResources.CurrentDayTime}:</b> {weatherEmojies[emojiIndex]}";
+            var emojiIndex = fourthIndex;
+            var nameIndex = fourthIndex;
+
+            return $"<b>{GsResources.CurrentDayTime}:</b> {weatherEmojies[emojiIndex]} {weatherNames[nameIndex]}";
         }
 
         public Message BackToPrevMenu(GsContext context, Player player)

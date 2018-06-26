@@ -313,7 +313,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.NpcInfo", "NpcInfo")
                         .WithMany("Dialogues")
                         .HasForeignKey("NpcInfoId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Item", b =>
@@ -321,7 +321,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.ItemType", "ItemType")
                         .WithMany()
                         .HasForeignKey("ItemTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.ItemDiscovery", b =>
@@ -329,12 +329,12 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GhostSwordPlugin.Models.Place", "Place")
                         .WithMany()
                         .HasForeignKey("PlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Journey", b =>
@@ -342,12 +342,12 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.PlaceAdjacency", "PlaceAdjacency")
                         .WithMany()
                         .HasForeignKey("PlaceAdjacencyId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GhostSwordPlugin.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.NpcInfo", b =>
@@ -355,7 +355,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Place", "Place")
                         .WithMany()
                         .HasForeignKey("PlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.Place", b =>
@@ -409,7 +409,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Place", "Place")
                         .WithMany()
                         .HasForeignKey("PlaceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("GhostSwordPlugin.Models.PlayerItem", b =>
@@ -417,7 +417,7 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GhostSwordPlugin.Models.Player", "Player")
                         .WithMany()
@@ -430,12 +430,12 @@ namespace GhostSwordPlugin.Migrations
                     b.HasOne("GhostSwordPlugin.Models.PlaceLink", "PlaceLink")
                         .WithMany()
                         .HasForeignKey("PlaceLinkId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GhostSwordPlugin.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }
