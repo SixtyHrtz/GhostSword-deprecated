@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,8 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" />
     <PackageReference Include="Telegram.Bot" Version="14.6.0" />
   </ItemGroup>
 
@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(ProjectDir)bin\Debug\netcoreapp2.0\GhostSwordPlugin.dll&quot; &quot;$(SolutionDir)GhostSwordOnline\bin\Debug\netcoreapp2.0\Plugins&quot;" />
+    <Exec Command="copy &quot;$(ProjectDir)bin\Debug\netcoreapp2.1\GhostSwordPlugin.dll&quot; &quot;$(SolutionDir)GhostSwordOnline\bin\Debug\netcoreapp2.1\Plugins&quot;" />
   </Target>
 
 </Project>
