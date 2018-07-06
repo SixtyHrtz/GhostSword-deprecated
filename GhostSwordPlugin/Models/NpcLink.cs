@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GhostSwordPlugin.Models
 {
-    public class PlaceLink
+    public class NpcLink
     {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
 
-        public IEnumerable<PlayerPlace> PlayerPlaces { get; set; }
-        public IEnumerable<Place> Places { get; set; }
+        public IEnumerable<PlayerNpc> PlayerNpcs { get; set; }
+        public IEnumerable<Npc> Npcs { get; set; }
     }
 }

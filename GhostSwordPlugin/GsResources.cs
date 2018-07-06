@@ -16,6 +16,7 @@ namespace GhostSwordPlugin
         public static string BackpackItemsCountOverflow = "Столько предметов в рюкзаке нет!";
         public static string CurrentDayTime = "Текущее время суток";
         public static string DialogNotExists = "Такого диалога не существует!";
+        public static string DialogUnavailable = "Диалог недоступен!";
         public static string Dropped = "Выброшено";
         public static string Equiped = "Надето";
         public static string ItemSlotIsEmpty = "На этом месте нет предмета!";

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GhostSwordPlugin.Models
 {
@@ -15,5 +16,7 @@ namespace GhostSwordPlugin.Models
 
         public Place Place1 { get; set; }
         public Place Place2 { get; set; }
+
+        public IEnumerable<Journey> Journeys { get; set; }
     }
 }

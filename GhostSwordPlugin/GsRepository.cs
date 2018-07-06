@@ -19,7 +19,7 @@ namespace GhostSwordPlugin
         public GsRepository()
         {
             using (var context = new GsContext())
-                context.Database.ExecuteSqlCommand("EXEC InitializePlayersPlaces");
+                context.Database.ExecuteSqlCommand("EXEC InitializePlayerPhases");
 
             eventMethods = new List<Func<GsContext, List<AnswerMessage>>>
             {
@@ -45,12 +45,12 @@ namespace GhostSwordPlugin
         public Player GetOrInsertPlayer(GsContext context, IncomeMessage message)
         {
             var player = context.Players
-                .Include(x => x.HeadItem).ThenInclude(y => y.Item)
-                .Include(x => x.ChestItem).ThenInclude(y => y.Item)
-                .Include(x => x.HandsItem).ThenInclude(y => y.Item)
-                .Include(x => x.LegsItem).ThenInclude(y => y.Item)
-                .Include(x => x.FeetsItem).ThenInclude(y => y.Item)
-                .FirstOrDefault(x => x.UserId == message.Id);
+                .Include(p => p.HeadItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.ChestItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.HandsItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.LegsItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.FeetsItem).ThenInclude(pi => pi.Item)
+                .FirstOrDefault(p => p.UserId == message.Id);
 
             if (player == null)
             {
@@ -60,10 +60,10 @@ namespace GhostSwordPlugin
 
                 context.PlayerPlaces.AddRange(
                     context.PlaceLinks
-                        .Select(x => new PlayerPlace()
+                        .Select(pl => new PlayerPlace()
                         {
                             PlayerId = player.Id,
-                            PlaceLinkId = x.Id
+                            PlaceLinkId = pl.Id
                         }));
                 context.SaveChanges();
             }
@@ -111,7 +111,7 @@ namespace GhostSwordPlugin
         {
             var dayTime = GetTimeOfDay();
             var places = GetAdjacentPlaces(context, player).Text;
-            var npcs = GetNPCs(context, player).Text;
+            var npcs = GetNpcs(context, player).Text;
             return new Message($"{dayTime}\n\n{Emoji.Eye} <b>{GsResources.Nearby}:</b>\n{places}\n{npcs}");
         }
 
@@ -150,31 +150,31 @@ namespace GhostSwordPlugin
 
         public Message GetAdjacentPlaces(GsContext context, Player player) =>
             new Message(string.Join("\n", context.PlaceAdjacencies
-                .Include(x => x.Place2)
-                    .ThenInclude(y => y.PlaceLink)
-                .Where(x => x.Place1Id == player.PlaceId && context.PlayerPlaces
-                    .Where(y => y.PlayerId == player.Id)
-                    .Any(y => y.PlaceLinkId == x.Place2.PlaceLinkId && y.Phase == x.Place2.Phase))
-                .Select(x => $"{Emoji.WhiteQuestionMark}{x.Place2.Name} /place_{x.Place2.PlaceLink.Name}")));
+                .Include(pa => pa.Place2)
+                    .ThenInclude(p => p.PlaceLink)
+                .Where(pa => pa.Place1Id == player.PlaceId && context.PlayerPlaces
+                    .Where(pp => pp.PlayerId == player.Id)
+                    .Any(pp => pp.PlaceLinkId == pa.Place2.PlaceLinkId && pp.Phase == pa.Place2.Phase))
+                .Select(pa => $"{Emoji.WhiteQuestionMark}{pa.Place2.Name} /place_{pa.Place2.PlaceLink.Name}")));
 
         public Message BeginJourney(GsContext context, Player player, string placeLinkName)
         {
             if (player.IsBusy) return GsResources.PlayerIsBusy;
 
             var place = context.PlayerPlaces
-                .Include(x => x.PlaceLink)
+                .Include(pp => pp.PlaceLink)
                 .Join(context.Places,
                     x => new { x.PlaceLinkId, x.Phase },
                     y => new { y.PlaceLinkId, y.Phase },
                     (playerPlace, foundPlace) => new { playerPlace, foundPlace })
                 .FirstOrDefault(x => x.playerPlace.PlaceLink.Name == placeLinkName &&
-                    x.playerPlace.PlayerId == player.Id);
+                    x.playerPlace.PlayerId == player.Id)?.foundPlace;
 
             if (place == null)
                 return new Message(GsResources.PlaceNotExists);
 
             var placeAdjacency = context.PlaceAdjacencies
-                .Where(x => x.Place1Id == player.PlaceId && x.Place2Id == place.foundPlace.Id)
+                .Where(pa => pa.Place1Id == player.PlaceId && pa.Place2Id == place.Id)
                 .FirstOrDefault();
 
             if (placeAdjacency == null)
@@ -188,58 +188,15 @@ namespace GhostSwordPlugin
             return new Message(placeAdjacency?.BeginText);
         }
 
-        public Message GetNPCs(GsContext context, Player player) =>
-            new Message(string.Join("\n", context.NpcInfos
-                .Where(x => x.PlaceId == player.PlaceId)
-                .Select(x => $"{Emoji.BustInSilhouette}{x.Name} /npc_{x.Id}")));
-
-        public Message GetDialogues(GsContext context, Player player, uint npcId)
-        {
-            if (player.IsBusy) return GsResources.PlayerIsBusy;
-
-            var npc = context.NpcInfos
-                .Include(x => x.Dialogues)
-                .FirstOrDefault(x => x.Id == npcId);
-
-            if (npc == null)
-                return GetLookupMessage(context, player, GsResources.NpcNotExists);
-
-            if (npc.PlaceId != player.PlaceId)
-                return GetLookupMessage(context, player, GsResources.NpcTooFar);
-
-            if (npc.Dialogues.Count == 0)
-                return GetLookupMessage(context, player, GsResources.NothingToTalkAbout);
-
-            return new Message($"{npc.Greetings}\n\n" + string.Join("\n", npc.Dialogues
-                .Select(x => $"{Emoji.SpeechBalloon}{x.Name} /dial_{x.Id}")));
-        }
-
-        public Message GetDialogue(GsContext context, Player player, uint dialogueId)
-        {
-            if (player.IsBusy) return GsResources.PlayerIsBusy;
-
-            var dialogue = context.Dialogues
-                .Include(x => x.NpcInfo)
-                .FirstOrDefault(x => x.Id == dialogueId);
-
-            if (dialogue == null)
-                return GetLookupMessage(context, player, GsResources.DialogNotExists);
-
-            if (dialogue.NpcInfo.PlaceId != player.PlaceId)
-                return GetLookupMessage(context, player, GsResources.NpcTooFar);
-
-            return new Message($"<b>{dialogue.Name}</b>\n{dialogue.Text}");
-        }
-
         public List<AnswerMessage> ExtractJournes(GsContext context)
         {
             var result = new List<AnswerMessage>();
             var now = DateTime.Now;
 
             var journeyList = context.Journeys
-                .Include(x => x.Player)
-                .Include(x => x.PlaceAdjacency)
-                .Where(x => (x.StartTime.AddSeconds(x.Duration) < now))
+                .Include(j => j.Player)
+                .Include(j => j.PlaceAdjacency)
+                .Where(j => (j.StartTime.AddSeconds(j.Duration) < now))
                 .ToList();
 
             foreach (Journey journey in journeyList)
@@ -272,17 +229,17 @@ namespace GhostSwordPlugin
             context.Players.Attach(player);
 
             var playerItems = context.ItemDiscoveries
-                .Include(x => x.Item)
-                .Where(x =>
-                    (x.PlaceId == placeAdjacency.Place1Id) ||
-                    (x.PlaceId == placeAdjacency.Place2Id))
-                .ToList().Where(x => x.Rate >= GhostSword.Random.Percent())
-                .Select(x => new PlayerItem(player, x.Item, GhostSword.Random.UnsignedInteger(x.MinAmount, x.MaxAmount), x))
+                .Include(id => id.Item)
+                .Where(id =>
+                    (id.PlaceId == placeAdjacency.Place1Id) ||
+                    (id.PlaceId == placeAdjacency.Place2Id))
+                .ToList().Where(id => id.Rate >= GhostSword.Random.Percent())
+                .Select(id => new PlayerItem(player, id.Item, GhostSword.Random.UnsignedInteger(id.MinAmount, id.MaxAmount), id))
                 .ToList();
 
             var message = string.Join(' ', playerItems
-                 .Select(x => x.ItemDiscovery.Text
-                     .Replace("[VALUE]", $"{x.Item.Emoji} {x.Amount} {x.Item.Name.ToLower()}")));
+                 .Select(pi => pi.ItemDiscovery.Text
+                     .Replace("[VALUE]", $"{pi.Item.Emoji} {pi.Amount} {pi.Item.Name.ToLower()}")));
 
             context.PlayerItems
                 .Join(playerItems,
@@ -292,8 +249,8 @@ namespace GhostSwordPlugin
                 .ToList()
                 .ForEach((x) => x.source.Amount += x.destination.Amount);
 
-            context.PlayerItems.AddRange(playerItems.Where(x => !context.PlayerItems
-                .Any(y => y.PlayerId == x.PlayerId && y.ItemId == x.ItemId))
+            context.PlayerItems.AddRange(playerItems.Where(pi => !context.PlayerItems
+                .Any(pi1 => pi1.PlayerId == pi.PlayerId && pi1.ItemId == pi.ItemId))
                 .ToList());
 
             context.SaveChanges();

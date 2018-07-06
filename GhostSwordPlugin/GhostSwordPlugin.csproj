@@ -21,6 +21,18 @@
     <Compile Remove="Migrations\20180619174514_Initial.cs" />
     <Compile Remove="Migrations\20180619175506_Initial.cs" />
     <Compile Remove="Migrations\20180619175639_Initial.cs" />
+    <Compile Remove="Migrations\20180702205409_Keys.cs" />
+    <Compile Remove="Migrations\20180702212222_Test.cs" />
+    <Compile Remove="Migrations\20180702212505_Test.cs" />
+    <Compile Remove="Migrations\20180702213424_Test.cs" />
+    <Compile Remove="Migrations\20180702225147_Test.cs" />
+    <Compile Remove="Migrations\20180702225430_Test.cs" />
+    <Compile Remove="Migrations\20180702225606_Test.cs" />
+    <Compile Remove="Migrations\20180702233758_Test2.cs" />
+    <Compile Remove="Migrations\20180703000321_LastFix.cs" />
+    <Compile Remove="Migrations\20180704191329_PreTest.cs" />
+    <Compile Remove="Migrations\20180705082623_Init.cs" />
+    <Compile Remove="Migrations\20180705083003_Init.cs" />
   </ItemGroup>
 
   <ItemGroup>

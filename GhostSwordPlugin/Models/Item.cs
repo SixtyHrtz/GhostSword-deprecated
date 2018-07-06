@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GhostSwordPlugin.Models
@@ -13,6 +14,8 @@ namespace GhostSwordPlugin.Models
         public string Description { get; set; }
 
         public ItemType ItemType { get; set; }
+
+        public IEnumerable<PlayerItem> PlayerItems { get; set; }
 
         [NotMapped]
         public string FullName { get { return $"{Emoji} {Name}"; } }

@@ -24,8 +24,8 @@ namespace GhostSwordPlugin
             if (!string.IsNullOrEmpty(equipment)) equipment = $"\n\n{equipment}";
 
             var items = context.PlayerItems
-                .Include(x => x.Item)
-                .Where(x => x.PlayerId == player.Id)
+                .Include(pi => pi.Item)
+                .Where(pi => pi.PlayerId == player.Id)
                 .ToList();
 
             items.ForEach((x) => x.Amount -= (uint)((
@@ -35,8 +35,8 @@ namespace GhostSwordPlugin
                 x.Guid == player.LegsItemGuid ||
                 x.Guid == player.FeetsItemGuid) ? 1 : 0));
 
-            var backpack = string.Join("\n", items.Where(x => x.Amount != 0)
-                .Select(x => $"{x.Item.FullName} x{x.Amount} /use_{x.ItemId}"));
+            var backpack = string.Join("\n", items.Where(pi => pi.Amount != 0)
+                .Select(pi => $"{pi.Item.FullName} x{pi.Amount} /use_{pi.ItemId}"));
             backpack = (string.IsNullOrEmpty(backpack)) ? GsResources.BackpackIsEmpty : backpack;
             backpack = (!string.IsNullOrEmpty(equipment)) ? $"\n{backpack}" : $"\n\n{backpack}";
 
@@ -46,8 +46,8 @@ namespace GhostSwordPlugin
         public Message GetDropItemList(GsContext context, Player player)
         {
             var backpack = string.Join("\n", context.PlayerItems
-                .Where(x => x.PlayerId == player.Id)
-                .Select(x => $"{x.Item.FullName} x{x.Amount} /drop_{x.ItemId}_1"));
+                .Where(pi => pi.PlayerId == player.Id)
+                .Select(pi => $"{pi.Item.FullName} x{pi.Amount} /drop_{pi.ItemId}_1"));
             backpack = (string.IsNullOrEmpty(backpack)) ? GsResources.BackpackIsEmpty : backpack;
 
             return new Message($"{Emoji.SchoolBackpack} <b>{GsResources.ItemsToDrop}:</b>\n\n{backpack}");
@@ -56,8 +56,8 @@ namespace GhostSwordPlugin
         public Message DropItem(GsContext context, Player player, uint itemTypeId, uint amount)
         {
             var item = context.PlayerItems
-                .Include(x => x.Item)
-                .Where(x => x.PlayerId == player.Id && x.ItemId == itemTypeId)
+                .Include(pi => pi.Item)
+                .Where(pi => pi.PlayerId == player.Id && pi.ItemId == itemTypeId)
                 .FirstOrDefault();
 
             if (item == null)
@@ -91,8 +91,8 @@ namespace GhostSwordPlugin
         public Message UseItem(GsContext context, Player player, uint itemTypeId)
         {
             var item = context.PlayerItems
-                .Include(x => x.Item)
-                .Where(x => x.PlayerId == player.Id && x.ItemId == itemTypeId)
+                .Include(pi => pi.Item)
+                .Where(pi => pi.PlayerId == player.Id && pi.ItemId == itemTypeId)
                 .FirstOrDefault();
 
             if (item == null)

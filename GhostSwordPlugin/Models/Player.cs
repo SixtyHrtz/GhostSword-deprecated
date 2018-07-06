@@ -1,6 +1,7 @@
 ﻿using GhostSword.Interfaces;
 using GhostSwordPlugin.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GhostSwordPlugin.Models
@@ -28,6 +29,11 @@ namespace GhostSwordPlugin.Models
         public PlayerItem HandsItem { get; set; }
         public PlayerItem LegsItem { get; set; }
         public PlayerItem FeetsItem { get; set; }
+
+        public IEnumerable<PlayerPlace> PlayerPlaces { get; set; }
+        public IEnumerable<PlayerNpc> PlayerNpcs { get; set; }
+        public IEnumerable<PlayerItem> PlayerItems { get; set; }
+        public IEnumerable<Journey> Journeys { get; set; }
 
         public Player() { }
 
