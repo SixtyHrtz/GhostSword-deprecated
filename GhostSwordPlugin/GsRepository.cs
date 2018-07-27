@@ -60,14 +60,7 @@ namespace GhostSwordPlugin
                 context.Players.Add(player = new Player(message.Id, name));
                 context.SaveChanges();
 
-                context.PlayerPlaces.AddRange(
-                    context.PlaceLinks
-                        .Select(pl => new PlayerPlace()
-                        {
-                            PlayerId = player.Id,
-                            PlaceLinkId = pl.Id
-                        }));
-                context.SaveChanges();
+                context.Database.ExecuteSqlCommand("EXEC InitializePlayerPhases");
             }
 
             return player;
@@ -127,7 +120,13 @@ namespace GhostSwordPlugin
             return new Message($"{dayTime}\n\n{Emoji.Eye} <b>{GsResources.Nearby}:</b>\n{places}\n{npcs}");
         }
 
-        private readonly string[] weatherEmojies = new string[] { "🌚", "🌙", "🌞", "🌙" };
+        private readonly string[] weatherEmojies = new string[]
+        {
+            Emoji.NewMoonFace,
+            Emoji.CrescentMoon,
+            Emoji.SunWithFace,
+            Emoji.CrescentMoon
+        };
         private readonly string[] weatherNames = new string[] { "Ночь", "Утро", "День", "Вечер" };
 
         private string GetTimeOfDay()
