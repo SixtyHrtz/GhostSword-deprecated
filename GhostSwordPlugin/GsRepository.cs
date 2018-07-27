@@ -156,7 +156,7 @@ namespace GhostSwordPlugin
                 $"{player.Class.FullEnergy}: {player.Energy}/{player.TotalEnergy}\n\n" +
                 $"{GsResources.Characteristics}:\n" +
                 $"{GsResources.MeleeAttack}: {player.TotalMeleeAttack}\n" +
-                $"{GsResources.MeleeDefence}: {player.TotalMeleeDefence}\n\n" +
+                $"{GsResources.MeleeDefence}: {player.TotalPhysicDefence}\n\n" +
                 $"{GsResources.Equipment}: /eqp\n" +
                 $"{GsResources.Journal}: /jrn\n" +
                 $"{GsResources.Bag}: /bag";

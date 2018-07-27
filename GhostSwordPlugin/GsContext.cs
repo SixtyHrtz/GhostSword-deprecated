@@ -52,8 +52,7 @@ namespace GhostSwordPlugin
                 p.Property(p1 => p1.BaseMeleeAttack).HasDefaultValue(1);
                 p.Property(p1 => p1.BaseRangeAttack).HasDefaultValue(1);
                 p.Property(p1 => p1.BaseMagicAttack).HasDefaultValue(1);
-                p.Property(p1 => p1.BaseMeleeDefence).HasDefaultValue(0);
-                p.Property(p1 => p1.BaseRangeDefence).HasDefaultValue(0);
+                p.Property(p1 => p1.BasePhysicDefence).HasDefaultValue(0);
                 p.Property(p1 => p1.BaseMagicDefence).HasDefaultValue(0);
                 p.HasOne(p1 => p1.HeadItem).WithMany().OnDelete(DeleteBehavior.Restrict);
                 p.HasOne(p1 => p1.ChestItem).WithMany().OnDelete(DeleteBehavior.Restrict);

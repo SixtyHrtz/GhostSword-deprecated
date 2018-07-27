@@ -30,8 +30,7 @@ namespace GhostSwordPlugin.Models
         public uint BaseMeleeAttack { get; set; }
         public uint BaseRangeAttack { get; set; }
         public uint BaseMagicAttack { get; set; }
-        public uint BaseMeleeDefence { get; set; }
-        public uint BaseRangeDefence { get; set; }
+        public uint BasePhysicDefence { get; set; }
         public uint BaseMagicDefence { get; set; }
 
         public Guid? HeadItemGuid { get; set; }
@@ -72,9 +71,7 @@ namespace GhostSwordPlugin.Models
         [NotMapped]
         public uint TotalMagicAttack { get { return BaseMagicAttack; } }
         [NotMapped]
-        public uint TotalMeleeDefence { get { return BaseMeleeDefence; } }
-        [NotMapped]
-        public uint TotalRangeDefence { get { return BaseRangeDefence; } }
+        public uint TotalPhysicDefence { get { return BasePhysicDefence; } }
         [NotMapped]
         public uint TotalMagicDefence { get { return BaseMagicDefence; } }
 
