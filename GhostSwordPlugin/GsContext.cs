@@ -15,6 +15,8 @@ namespace GhostSwordPlugin
         public DbSet<PlayerNpc> PlayerNpcs { get; set; }
         public DbSet<PlayerItem> PlayerItems { get; set; }
 
+        public DbSet<Class> Classes { get; set; }
+
         public DbSet<Place> Places { get; set; }
         public DbSet<PlaceLink> PlaceLinks { get; set; }
         public DbSet<PlaceAdjacency> PlaceAdjacencies { get; set; }
@@ -39,9 +41,20 @@ namespace GhostSwordPlugin
 
             modelBuilder.Entity<Player>(p =>
             {
+                p.Property(p1 => p1.ClassId).HasDefaultValue(1);
                 p.Property(p1 => p1.PlaceId).HasDefaultValue(1);
                 p.Property(p1 => p1.MenuId).HasDefaultValue(MenuType.Main);
                 p.Property(p1 => p1.IsBusy).HasDefaultValue(false);
+                p.Property(p1 => p1.BaseHealth).HasDefaultValue(10);
+                p.Property(p1 => p1.Health).HasDefaultValue(10);
+                p.Property(p1 => p1.BaseStamina).HasDefaultValue(10);
+                p.Property(p1 => p1.Stamina).HasDefaultValue(10);
+                p.Property(p1 => p1.BaseMeleeAttack).HasDefaultValue(1);
+                p.Property(p1 => p1.BaseRangeAttack).HasDefaultValue(1);
+                p.Property(p1 => p1.BaseMagicAttack).HasDefaultValue(1);
+                p.Property(p1 => p1.BaseMeleeDefence).HasDefaultValue(0);
+                p.Property(p1 => p1.BaseRangeDefence).HasDefaultValue(0);
+                p.Property(p1 => p1.BaseMagicDefence).HasDefaultValue(0);
                 p.HasOne(p1 => p1.HeadItem).WithMany().OnDelete(DeleteBehavior.Restrict);
                 p.HasOne(p1 => p1.ChestItem).WithMany().OnDelete(DeleteBehavior.Restrict);
                 p.HasOne(p1 => p1.HandsItem).WithMany().OnDelete(DeleteBehavior.Restrict);

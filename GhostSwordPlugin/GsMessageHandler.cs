@@ -22,6 +22,7 @@ namespace GhostSwordPlugin
             Register("/rem", repository.RemoveItem);
             Register("/use", repository.UseItem);
             Register(GsResources.LookAround, repository.LookAround);
+            Register(GsResources.Profile, repository.GetProfile);
             Register(GsResources.Backpack, repository.InspectInventory);
             Register(GsResources.Drop, repository.GetDropItemList);
             Register(GsResources.Back, repository.BackToPrevMenu);

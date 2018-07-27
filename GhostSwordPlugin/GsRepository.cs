@@ -23,7 +23,8 @@ namespace GhostSwordPlugin
 
             eventMethods = new List<Func<GsContext, List<AnswerMessage>>>
             {
-                ExtractJournes
+                ExtractJournes,
+                UpdateStamina
             };
         }
 
@@ -45,6 +46,7 @@ namespace GhostSwordPlugin
         public Player GetOrInsertPlayer(GsContext context, IncomeMessage message)
         {
             var player = context.Players
+                .Include(p => p.Class)
                 .Include(p => p.HeadItem).ThenInclude(pi => pi.Item)
                 .Include(p => p.ChestItem).ThenInclude(pi => pi.Item)
                 .Include(p => p.HandsItem).ThenInclude(pi => pi.Item)
@@ -73,23 +75,33 @@ namespace GhostSwordPlugin
 
         public Data<Keyboard> GetKeyboard(GsContext context, IUser user)
         {
-            Button[] buttons;
+            Button[][] buttons;
             switch (((Player)user).MenuId)
             {
                 case MenuType.Main:
-                    buttons = new Button[]
+                    buttons = new Button[][]
                     {
-                        GsResources.LookAround,
-                        GsResources.Backpack
+                        new Button[]
+                        {
+                            GsResources.LookAround
+                        },
+                        new Button[]
+                        {
+                            GsResources.Profile,
+                            GsResources.Backpack
+                        }
                     };
                     break;
 
                 case MenuType.Inventory:
-                    buttons = new Button[]
+                    buttons = new Button[][]
                     {
-                        GsResources.Backpack,
-                        GsResources.Drop,
-                        GsResources.Back
+                        new Button[]
+                        {
+                            GsResources.Backpack,
+                            GsResources.Drop,
+                            GsResources.Back
+                        }
                     };
                     break;
 
@@ -133,6 +145,24 @@ namespace GhostSwordPlugin
             var nameIndex = fourthIndex;
 
             return $"<b>{GsResources.CurrentDayTime}:</b> {weatherEmojies[emojiIndex]} {weatherNames[nameIndex]}";
+        }
+
+        public Message GetProfile(GsContext context, Player player)
+        {
+            var profile = $"{player.Class.Emoji}{player.Username}, {player.Level}lvl\n" +
+                $"<i>«{player.Class.IdleAction}»</i>\n" +
+                $"{player.Class.FullExperience}: {player.Experience}/{player.ExperienceToNextLevel}\n" +
+                $"{GsResources.Health}: {player.Health}/{player.TotalHealth}\n" +
+                $"{GsResources.Stamina}: {player.Stamina}/{player.TotalStamina} ({Emoji.HourglassNotDone}<i>{player.GetStaminaRecoveryTime()}</i> мин)\n" +
+                $"{player.Class.FullEnergy}: {player.Energy}/{player.TotalEnergy}\n\n" +
+                $"{GsResources.Characteristics}:\n" +
+                $"{GsResources.MeleeAttack}: {player.TotalMeleeAttack}\n" +
+                $"{GsResources.MeleeDefence}: {player.TotalMeleeDefence}\n\n" +
+                $"{GsResources.Equipment}: /eqp\n" +
+                $"{GsResources.Journal}: /jrn\n" +
+                $"{GsResources.Bag}: /bag";
+
+            return new Message(profile);
         }
 
         public Message BackToPrevMenu(GsContext context, Player player)
@@ -255,6 +285,33 @@ namespace GhostSwordPlugin
 
             context.SaveChanges();
             return message;
+        }
+
+        public List<AnswerMessage> UpdateStamina(GsContext context)
+        {
+            context.Players
+                .Where(p => p.Stamina < p.TotalStamina && p.StartRecoveryTime == null)
+                .ToList()
+                .ForEach(p => p.StartRecoveryTime = DateTime.Now);
+
+            context.Players
+                .Where(p => p.Stamina < p.TotalStamina && p.StartRecoveryTime != null &&
+                    (DateTime.Now - p.StartRecoveryTime).Value.TotalMinutes >= 30)
+                .ToList()
+                .ForEach(p =>
+                {
+                    p.StartRecoveryTime = DateTime.Now;
+                    p.Stamina++;
+                });
+
+            context.Players
+                .Where(p => p.Stamina >= p.TotalStamina && p.StartRecoveryTime != null)
+                .ToList()
+                .ForEach(p => p.StartRecoveryTime = null);
+
+            context.SaveChanges();
+
+            return new List<AnswerMessage>();
         }
     }
 }

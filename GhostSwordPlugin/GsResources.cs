@@ -30,10 +30,20 @@ namespace GhostSwordPlugin
         public static string PlaceNotExists = "Такого места не существует!";
         public static string Removed = "Снято";
 
-        public static string LookAround = $"{Emoji.Eye} Осмотреться";
+        public static string Bag = $"{Emoji.SchoolBackpack}Сумка";
+        public static string Characteristics = $"{Emoji.MilitaryMedal}Характеристики";
+        public static string Equipment = $"{Emoji.RunningShirt}Экипировка";
+        public static string Journal = $"{Emoji.ClosedBook}Дневник";
+        public static string MeleeAttack = $"{Emoji.Dagger}Ближний бой";
+        public static string MeleeDefence = $"{Emoji.Shield}Защита";
+        public static string Health = $"{Emoji.RedHeart}Здоровье";
+        public static string Stamina = $"{Emoji.JapaneseSymbolForBeginner}Выносливость";
+
+        public static string Back = $"{Emoji.BackArrow} Назад";
         public static string Backpack = $"{Emoji.SchoolBackpack} Инвентарь";
         public static string Drop = $"{Emoji.Wastebasket} Выбросить";
-        public static string Back = $"{Emoji.BackArrow} Назад";
+        public static string LookAround = $"{Emoji.Eye} Осмотреться";
+        public static string Profile = $"{Emoji.BustInSilhouette} Профиль";
 
         public static Message PlayerIsBusy = new Message("Вам не до этого...");
     }
