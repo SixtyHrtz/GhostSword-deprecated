@@ -38,6 +38,8 @@ namespace GhostSwordPlugin.Models
         public Guid? HandsItemGuid { get; set; }
         public Guid? LegsItemGuid { get; set; }
         public Guid? FeetsItemGuid { get; set; }
+        public Guid? RightHandItemGuid { get; set; }
+        public Guid? LeftHandItemGuid { get; set; }
 
         public Class Class { get; set; }
         public Place Place { get; set; }
@@ -47,6 +49,8 @@ namespace GhostSwordPlugin.Models
         public PlayerItem HandsItem { get; set; }
         public PlayerItem LegsItem { get; set; }
         public PlayerItem FeetsItem { get; set; }
+        public PlayerItem RightHandItem { get; set; }
+        public PlayerItem LeftHandItem { get; set; }
 
         public IEnumerable<PlayerPlace> PlayerPlaces { get; set; }
         public IEnumerable<PlayerNpc> PlayerNpcs { get; set; }

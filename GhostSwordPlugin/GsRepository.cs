@@ -52,6 +52,8 @@ namespace GhostSwordPlugin
                 .Include(p => p.HandsItem).ThenInclude(pi => pi.Item)
                 .Include(p => p.LegsItem).ThenInclude(pi => pi.Item)
                 .Include(p => p.FeetsItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.LeftHandItem).ThenInclude(pi => pi.Item)
+                .Include(p => p.RightHandItem).ThenInclude(pi => pi.Item)
                 .FirstOrDefault(p => p.UserId == message.Id);
 
             if (player == null)

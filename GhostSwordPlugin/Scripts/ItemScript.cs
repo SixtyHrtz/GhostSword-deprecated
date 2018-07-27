@@ -21,6 +21,8 @@ namespace GhostSwordPlugin
             if (player.HandsItem != null) equipment += $"{player.HandsItem.Item.FullName} /rem_hands\n";
             if (player.LegsItem != null) equipment += $"{player.LegsItem.Item.FullName} /rem_legs\n";
             if (player.FeetsItem != null) equipment += $"{player.FeetsItem.Item.FullName} /rem_feets\n";
+            if (player.RightHandItem != null) equipment += $"{player.RightHandItem.Item.FullName} /rem_rh\n";
+            if (player.LeftHandItem != null) equipment += $"{player.LeftHandItem.Item.FullName} /rem_lh\n";
             if (!string.IsNullOrEmpty(equipment)) equipment = $"\n\n{equipment}";
 
             var items = context.PlayerItems
@@ -33,7 +35,9 @@ namespace GhostSwordPlugin
                 x.Guid == player.ChestItemGuid ||
                 x.Guid == player.HandsItemGuid ||
                 x.Guid == player.LegsItemGuid ||
-                x.Guid == player.FeetsItemGuid) ? 1 : 0));
+                x.Guid == player.FeetsItemGuid ||
+                x.Guid == player.RightHandItemGuid ||
+                x.Guid == player.LeftHandItemGuid) ? 1 : 0));
 
             var backpack = string.Join("\n", items.Where(pi => pi.Amount != 0)
                 .Select(pi => $"{pi.Item.FullName} x{pi.Amount} /use_{pi.ItemId}"));
@@ -79,6 +83,10 @@ namespace GhostSwordPlugin
                     player.LegsItemGuid = null;
                 if (player.FeetsItemGuid == item.Guid)
                     player.FeetsItemGuid = null;
+                if (player.RightHandItemGuid == item.Guid)
+                    player.RightHandItemGuid = null;
+                if (player.LeftHandItemGuid == item.Guid)
+                    player.LeftHandItemGuid = null;
 
                 context.Remove(item);
             }
@@ -106,6 +114,8 @@ namespace GhostSwordPlugin
                 case 4: player.HandsItemGuid = item.Guid; break;
                 case 5: player.LegsItemGuid = item.Guid; break;
                 case 6: player.FeetsItemGuid = item.Guid; break;
+                case 7: player.RightHandItemGuid = item.Guid; break;
+                case 8: player.LeftHandItemGuid = item.Guid; break;
             }
             context.SaveChanges();
 
@@ -138,6 +148,14 @@ namespace GhostSwordPlugin
                 case "feets":
                     item = player.FeetsItem?.Item;
                     player.FeetsItemGuid = null;
+                    break;
+                case "rh":
+                    item = player.RightHandItem?.Item;
+                    player.RightHandItemGuid = null;
+                    break;
+                case "lh":
+                    item = player.LeftHandItem?.Item;
+                    player.LeftHandItemGuid = null;
                     break;
                 default:
                     return new Message(GsResources.ItemSlotNotExists);
