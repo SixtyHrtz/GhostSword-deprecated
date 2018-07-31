@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace GhostSwordPlugin
 {
-    public partial class GsGameController
+    public partial class GsController
     {
         public Message InspectInventory(GsContext context, Player player)
         {
