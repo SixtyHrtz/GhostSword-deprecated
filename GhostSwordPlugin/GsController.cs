@@ -10,13 +10,13 @@ using System.Linq;
 
 namespace GhostSwordPlugin
 {
-    public partial class GsRepository
+    public partial class GsController
     {
         public bool Locked { get; private set; }
 
         private readonly List<Func<GsContext, List<AnswerMessage>>> eventMethods;
 
-        public GsRepository()
+        public GsController()
         {
             using (var context = new GsContext())
                 context.Database.ExecuteSqlCommand("EXEC InitializePlayerPhases");

@@ -62,7 +62,7 @@ namespace GhostSwordPlugin
 
             var buttons = keyboard.Buttons
                 .Select(x => x
-                    .Select(y => new Telegram.Bot.Types.ReplyMarkups.KeyboardButton(y.Text))
+                    .Select(y => new KeyboardButton(y.Text))
                     .ToArray())
                 .ToArray();
             return new ReplyKeyboardMarkup(buttons, true);

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace GhostSwordPlugin
 {
-    public partial class GsRepository
+    public partial class GsController
     {
         public Message GetNpcs(GsContext context, Player player) =>
             new Message(string.Join("\n", GetAvailableNpcs(context, player)

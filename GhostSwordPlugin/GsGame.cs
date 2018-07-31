@@ -9,13 +9,13 @@ namespace GhostSwordPlugin
     [Export(typeof(IGame))]
     public class GsGame : IGame
     {
-        public GsRepository Repository { get; set; }
+        public GsController Controller { get; set; }
         public GsMessageHandler MessageHandler { get; set; }
 
         public GsGame()
         {
-            Repository = new GsRepository();
-            MessageHandler = new GsMessageHandler(Repository);
+            Controller = new GsController();
+            MessageHandler = new GsMessageHandler(Controller);
         }
 
         public Tuple<IUser, Data<AnswerMessage>> GetAnswer(IncomeMessage message)
@@ -45,12 +45,12 @@ namespace GhostSwordPlugin
         {
             using (var session = new GsSession(this))
             {
-                if (Repository.Locked)
+                if (Controller.Locked)
                     return new List<AnswerMessage>();
 
-                Repository.Lock();
-                var answers = Repository.GetEventsResults(session.Context);
-                Repository.Unlock();
+                Controller.Lock();
+                var answers = Controller.GetEventsResults(session.Context);
+                Controller.Unlock();
 
                 return answers;
             }

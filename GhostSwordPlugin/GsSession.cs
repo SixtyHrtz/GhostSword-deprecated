@@ -19,13 +19,13 @@ namespace GhostSwordPlugin
         }
 
         public Data<IUser> GetUser(IncomeMessage message) =>
-            game.Repository.GetUser(Context, message);
+            game.Controller.GetUser(Context, message);
 
         public Data<Message> InvokeCommand(IUser user, Command command) =>
             game.MessageHandler.Invoke(Context, user, command);
 
         public Data<Keyboard> GetKeyboard(IUser user) =>
-            game.Repository.GetKeyboard(Context, user);
+            game.Controller.GetKeyboard(Context, user);
 
         protected virtual void Dispose(bool disposing)
         {

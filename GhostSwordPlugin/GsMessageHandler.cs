@@ -8,24 +8,24 @@ namespace GhostSwordPlugin
 {
     public class GsMessageHandler : BaseMessageHandler
     {
-        private GsRepository repository;
+        private GsController controller;
 
-        public GsMessageHandler(GsRepository repository) => this.repository = repository;
+        public GsMessageHandler(GsController controller) => this.controller = controller;
 
         protected override void RegisterCommands()
         {
-            Register("/start", repository.LookAround);
-            Register("/npc", repository.GetDialogues);
-            Register("/dial", repository.GetDialogue);
-            Register("/place", repository.BeginJourney);
-            Register("/drop", repository.DropItem);
-            Register("/rem", repository.RemoveItem);
-            Register("/use", repository.UseItem);
-            Register(GsResources.LookAround, repository.LookAround);
-            Register(GsResources.Profile, repository.GetProfile);
-            Register(GsResources.Backpack, repository.InspectInventory);
-            Register(GsResources.Drop, repository.GetDropItemList);
-            Register(GsResources.Back, repository.BackToPrevMenu);
+            Register("/start", controller.LookAround);
+            Register("/npc", controller.GetDialogues);
+            Register("/dial", controller.GetDialogue);
+            Register("/place", controller.BeginJourney);
+            Register("/drop", controller.DropItem);
+            Register("/rem", controller.RemoveItem);
+            Register("/use", controller.UseItem);
+            Register(GsResources.LookAround, controller.LookAround);
+            Register(GsResources.Profile, controller.GetProfile);
+            Register(GsResources.Backpack, controller.InspectInventory);
+            Register(GsResources.Drop, controller.GetDropItemList);
+            Register(GsResources.Back, controller.BackToPrevMenu);
         }
 
         private void Register(string input, Func<GsContext, Player, Message> function) => base.Register(input, function);
