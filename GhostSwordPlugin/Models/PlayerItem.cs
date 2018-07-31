@@ -32,5 +32,7 @@ namespace GhostSwordPlugin.Models
             ItemId = item.Id;
             Amount = amount;
         }
+
+        public string GetUseString() => (Item.ItemTypeId == 1) ? string.Empty : $" /use_{ItemId}";
     }
 }

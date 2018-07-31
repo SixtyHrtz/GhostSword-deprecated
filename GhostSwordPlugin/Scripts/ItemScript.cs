@@ -3,6 +3,9 @@ using GhostSword.Types;
 using GhostSwordPlugin.Enums;
 using GhostSwordPlugin.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GhostSwordPlugin
@@ -40,7 +43,7 @@ namespace GhostSwordPlugin
                 x.Guid == player.LeftHandItemGuid) ? 1 : 0));
 
             var backpack = string.Join("\n", items.Where(pi => pi.Amount != 0)
-                .Select(pi => $"{pi.Item.FullName} x{pi.Amount} /use_{pi.ItemId}"));
+                .Select(pi => $"{pi.Item.FullName} x{pi.Amount}" + pi.GetUseString()));
             backpack = (string.IsNullOrEmpty(backpack)) ? GsResources.BackpackIsEmpty : backpack;
             backpack = (!string.IsNullOrEmpty(equipment)) ? $"\n{backpack}" : $"\n\n{backpack}";
 
@@ -96,11 +99,11 @@ namespace GhostSwordPlugin
             return new Message($"{GsResources.Dropped}: {amount} {item.Item.FullName}");
         }
 
-        public Message UseItem(GsContext context, Player player, uint itemTypeId)
+        public Message UseItem(GsContext context, Player player, uint itemId)
         {
             var item = context.PlayerItems
                 .Include(pi => pi.Item)
-                .Where(pi => pi.PlayerId == player.Id && pi.ItemId == itemTypeId)
+                .Where(pi => pi.PlayerId == player.Id && pi.ItemId == itemId)
                 .FirstOrDefault();
 
             if (item == null)
