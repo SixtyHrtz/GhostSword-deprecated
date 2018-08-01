@@ -12,6 +12,8 @@
         public const string JapaneseSymbolForBeginner = "🔰";
         public const string MilitaryMedal = "🎖️";
         public const string NewMoonFace = "🌚";
+        public const string Package = "📦";
+        public const string PawPrints = "🐾";
         public const string RedHeart = "❤️";
         public const string RunningShirt = "🎽";
         public const string SchoolBackpack = "🎒";

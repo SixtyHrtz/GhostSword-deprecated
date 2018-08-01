@@ -18,6 +18,6 @@ namespace GhostSwordPlugin.Models
         public IEnumerable<PlayerItem> PlayerItems { get; set; }
 
         [NotMapped]
-        public string FullName { get { return $"{Emoji} {Name}"; } }
+        public string FullName { get { return $"{(Emoji ?? GhostSword.Emoji.Package)}{Name}"; } }
     }
 }
