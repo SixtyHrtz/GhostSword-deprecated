@@ -108,6 +108,19 @@ namespace GhostSwordPlugin
             return Data<Keyboard>.CreateValid(new Keyboard(buttons));
         }
 
+        public Message BackToPrevMenu(GsContext context, Player player)
+        {
+            context.Attach(player);
+
+            switch (player.MenuId)
+            {
+                case MenuType.Inventory: player.MenuId = MenuType.Main; break;
+            }
+
+            context.SaveChanges();
+            return LookAround(context, player);
+        }
+
         private Message GetLookupMessage(GsContext context, Player player, string text)
         {
             var lookup = LookAround(context, player).Text;
@@ -164,19 +177,6 @@ namespace GhostSwordPlugin
                 $"{GsResources.Bag}: /bag";
 
             return new Message(profile);
-        }
-
-        public Message BackToPrevMenu(GsContext context, Player player)
-        {
-            context.Attach(player);
-
-            switch (player.MenuId)
-            {
-                case MenuType.Inventory: player.MenuId = MenuType.Main; break;
-            }
-
-            context.SaveChanges();
-            return LookAround(context, player);
         }
 
         public Message GetAdjacentPlaces(GsContext context, Player player) =>
@@ -261,10 +261,9 @@ namespace GhostSwordPlugin
 
             var playerItems = context.ItemDiscoveries
                 .Include(id => id.Item)
-                .Where(id =>
-                    (id.PlaceId == placeAdjacency.Place1Id) ||
-                    (id.PlaceId == placeAdjacency.Place2Id))
-                .ToList().Where(id => id.Rate >= GhostSword.Random.Percent())
+                .Where(id => (id.PlaceId == placeAdjacency.Place1Id) || (id.PlaceId == placeAdjacency.Place2Id))
+                .ToList()
+                .Where(id => id.Rate >= GhostSword.Random.Percent())
                 .Select(id => new PlayerItem(player, id.Item, GhostSword.Random.UnsignedInteger(id.MinAmount, id.MaxAmount), id))
                 .ToList();
 
@@ -280,8 +279,9 @@ namespace GhostSwordPlugin
                 .ToList()
                 .ForEach((x) => x.source.Amount += x.destination.Amount);
 
-            context.PlayerItems.AddRange(playerItems.Where(pi => !context.PlayerItems
-                .Any(pi1 => pi1.PlayerId == pi.PlayerId && pi1.ItemId == pi.ItemId))
+            context.PlayerItems.AddRange(playerItems
+                .Where(pi => !context.PlayerItems
+                    .Any(pi1 => pi1.PlayerId == pi.PlayerId && pi1.ItemId == pi.ItemId))
                 .ToList());
 
             context.SaveChanges();
@@ -311,7 +311,6 @@ namespace GhostSwordPlugin
                 .ForEach(p => p.StartRecoveryTime = null);
 
             context.SaveChanges();
-
             return new List<AnswerMessage>();
         }
     }

@@ -76,7 +76,8 @@ namespace GhostSwordPlugin
 
         private IEnumerable<Npc> GetNpcByDialogue(GsContext context, Player player, Dialogue dialogue) =>
             context.Npcs
-                .Where(n => n.NpcDialogues.Any(nd => nd.DialogueId == dialogue.Id && nd.NpcId == n.Id) && context.PlayerNpcs
+                .Where(n => n.NpcDialogues
+                    .Any(nd => nd.DialogueId == dialogue.Id && nd.NpcId == n.Id) && context.PlayerNpcs
                     .Any(pn => pn.PlayerId == player.Id && pn.NpcLinkId == n.NpcLinkId && pn.Phase == n.Phase));
     }
 }
